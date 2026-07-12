@@ -1,0 +1,22 @@
+# Reference PDFs — too large for version control
+*.pdf
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# The experimental repo has its own git history
+httpie-cli-carbon-study/
+
+# ATU Word template (binary — not useful to diff)
+*.docx
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+.idea/
