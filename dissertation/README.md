@@ -9,35 +9,25 @@
 
 ---
 
-## What Is in This Folder
-
-This folder contains the written dissertation chapters, bibliography, and appendices for submission to ATU Donegal. It is separate from the experimental artefact.
-
-| Folder / File | Contents |
-|---|---|
-| `chapters/` | One Markdown file per dissertation chapter (write here, transfer to Word template for final submission) |
-| `references/bibliography.md` | All citations in Harvard format |
-| `figures/` | Charts and diagrams generated from the analysis notebook |
-| `appendices/` | Supplementary material (workflow YAML listings, raw data samples) |
-
----
-
-## Experimental Artefact (Separate Repo)
-
-The technical experiment lives here:
+## Repository Layout
 
 ```
-../httpie-cli-carbon-study/
+msc-devops-dissertation/
+├── dissertation/          ← written chapters (this folder)
+├── experiments/           ← one subfolder per project under study
+│   ├── README.md          ← index of all projects + standard layout guide
+│   └── project-01-httpie-cli/  ← CI/CD workflows, data, analysis, paper draft
+├── literature/            ← paper summaries and new papers found
+├── notes/                 ← supervisor meeting notes, weekly log, explanations
+└── README.md              ← master overview (this file)
 ```
 
-That repository contains:
-- 4 instrumented experiment branches (C1–C4) on GitHub Actions
-- Eco-CI energy measurements for HTTPie CLI
-- Analysis Jupyter notebook
-- Data collection script
-- Real pilot measurements (see `paper.md` for results)
+**Writing lives in** `dissertation/` — chapters, bibliography, appendices.  
+**Practical work lives in** `experiments/` — workflows, data, analysis notebooks, paper drafts.  
+**As more projects are added**, new folders appear under `experiments/` (project-02, project-03…).
 
-**GitHub:** https://github.com/Umer-2612/httpie-cli-carbon-study
+The experiment branches (C1–C4 on GitHub Actions) are at:  
+https://github.com/Umer-2612/httpie-cli-carbon-study
 
 ---
 

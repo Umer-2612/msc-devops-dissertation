@@ -6,8 +6,6 @@
 .AppleDouble
 .LSOverride
 
-# The experimental repo has its own git history
-httpie-cli-carbon-study/
 
 # ATU Word template (binary — not useful to diff)
 *.docx
