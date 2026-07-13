@@ -15,6 +15,13 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+# Local-only working notes (not for public repo)
+notes/professor_explanation.md
+notes/tuesday_15july_meeting_brief.md
+notes/progress_plan.md
+notes/meeting_walkthrough_local.md
+experiments/project-01-httpie-cli/ieee_paper_draft.md
+
 # Editor
 .vscode/
 .idea/

@@ -67,7 +67,10 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 | File | What it contains |
 |---|---|
 | `dissertation/chapters/01_introduction.md` | Complete introduction chapter |
+| `dissertation/chapters/02_literature_review.md` | Literature review (sections 2.1–2.6) |
+| `dissertation/chapters/03_methodology.md` | Methodology chapter |
+| `dissertation/chapters/04_results.md` | Results chapter with pilot data |
 | `dissertation/references/bibliography.md` | All 18 references in Harvard format |
-| `experiments/project-01-httpie-cli/ieee_paper_draft.md` | Full IEEE paper draft with real measurements |
-| `notes/professor_explanation.md` | Simple answers to supervisor questions |
-| `notes/tuesday_15july_meeting_brief.md` | What to show + questions for 15 July meeting |
+| `experiments/project-01-httpie-cli/README.md` | Project summary, pilot results, how to run |
+| `experiments/project-01-httpie-cli/RESEARCH_LOG.md` | Audit log — decisions and findings |
+| `notes/weekly_log.md` | Week-by-week progress log |
