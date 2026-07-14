@@ -4,7 +4,7 @@
 
 **Student:** Umer Karachiwala · L00196895 · L00196895@atu.ie
 **Course:** M.Sc. in DevOps, Atlantic Technological University, Donegal
-**Supervisor:** [Supervisor Name]
+**Supervisor:** Saim Gafoor
 **Started:** 1 July 2026 · **Target Submission:** September 2026
 
 ---
