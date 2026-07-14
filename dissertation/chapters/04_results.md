@@ -9,11 +9,11 @@ All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-lates
 
 ---
 
-## 4.2 Pilot Measurements — HTTPie CLI (n = 1 per configuration)
+## 4.2 Pilot Measurements: HTTPie CLI (n = 1 per configuration)
 
-> These are real measurements from initial triggered runs. They are presented as descriptive observations only — no statistical inference is drawn from n = 1 data.
+> These are real measurements from initial triggered runs. They are presented as descriptive observations only; no statistical inference is drawn from n = 1 data.
 
-### 4.2.1 C1 Baseline — Code-Style Job
+### 4.2.1 C1 Baseline: Code-Style Job
 
 | Stage | CPU (%) | Energy (J) | Power (W) | Duration (s) |
 |---|---|---|---|---|
@@ -24,7 +24,7 @@ All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-lates
 
 **SCI (C1 code-style): 0.0248 gCO₂eq per run**
 
-### 4.2.2 C2 Pip-Cached Pipeline — Test Matrix
+### 4.2.2 C2 Pip-Cached Pipeline: Test Matrix
 
 | Job | Python | dep-install (J) | test-exec (J) | Total (J) | SCI (gCO₂eq) |
 |---|---|---|---|---|---|
@@ -43,7 +43,7 @@ All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-lates
 | Coverage | 3.10 | 82.64 | — | 633.98 | 0.1346 |
 | **Test matrix total** | | **323.24** | **1,046.08** | **1,378.46** | **0.2884** |
 
-### 4.2.4 C2 vs C4 — Initial Comparison
+### 4.2.4 C2 vs C4: Initial Comparison
 
 | Metric | C2 | C4 | C4 vs C2 |
 |---|---|---|---|
@@ -55,7 +55,7 @@ All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-lates
 
 **Key pilot finding:** The 7.1% total energy reduction from C2 to C4 is driven primarily by the dependency installation stage (−16.8%), not test execution (−3.5%). Caching targets the most variable and reducible stage.
 
-### 4.2.5 Multi-Region SCI Analysis (RQ3 — Pilot)
+### 4.2.5 Multi-Region SCI Analysis (RQ3, Pilot)
 
 | Region | Intensity (gCO₂eq/kWh) | C2 SCI | C4 SCI | C4 vs C2 |
 |---|---|---|---|---|
@@ -73,7 +73,7 @@ All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-lates
 
 This section presents descriptive statistics, normality tests, and Wilcoxon signed-rank comparisons for the full 30-run dataset across all four configurations. Results are drawn from `results/raw_data.csv` produced by `scripts/collect_results.py` after triggering the complete run protocol.
 
-*[Data collection in progress — this section will be completed once all 30 × 4 runs are triggered and collected.]*
+*[Data collection in progress. This section will be completed once all 30 × 4 runs are triggered and collected.]*
 
 ---
 

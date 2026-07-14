@@ -7,7 +7,7 @@ This chapter interprets the results in relation to the three research questions,
 
 ---
 
-## 5.2 RQ1 — Carbon Reduction per Strategy
+## 5.2 RQ1: Carbon Reduction per Strategy
 
 This section discusses the statistical results for each strategy (C2, C3, C4 vs C1), provides a mechanistic explanation for why each stage is or is not affected, and interprets the effect sizes in terms of practical significance.
 
@@ -17,7 +17,7 @@ The pilot data suggests that the dependency installation stage is the primary en
 
 ---
 
-## 5.3 RQ2 — Cross-Project Consistency
+## 5.3 RQ2: Cross-Project Consistency
 
 This section compares percentage energy reductions and Cliff's delta effect sizes across projects by programming language, project size (lines of code), and dependency graph size.
 
@@ -27,13 +27,13 @@ The working hypothesis is that caching will show larger absolute savings in proj
 
 ---
 
-## 5.4 RQ3 — Strategy Effectiveness Relative to Implementation Effort
+## 5.4 RQ3: Strategy Effectiveness Relative to Implementation Effort
 
 This section quantifies the implementation effort for each strategy and expresses carbon savings on a per-effort basis:
 
-- **Caching:** 2 lines per workflow file (`cache:` + `cache-dependency-path:`) — the lowest-effort intervention
-- **Path filtering:** 4–8 lines per workflow file — moderate effort
-- **Consolidation:** ~50–100 lines of YAML restructuring — highest effort
+- **Caching:** 2 lines per workflow file (`cache:` + `cache-dependency-path:`), the lowest-effort intervention
+- **Path filtering:** 4–8 lines per workflow file, moderate effort
+- **Consolidation:** ~50–100 lines of YAML restructuring, highest effort
 
 The pilot data suggests caching delivers the largest carbon saving per line of YAML changed. Path filtering's real-world saving (preventing unnecessary runs entirely) is not captured in `workflow_dispatch`-based measurements but represents a significant reduction for active repositories.
 
@@ -43,9 +43,7 @@ The pilot data suggests caching delivers the largest carbon saving per line of Y
 
 ## 5.5 The Regional Carbon Dominance Finding
 
-> *[Write this section — it is the most striking finding from the pilot]*
-
-The multi-region SCI analysis reveals that runner location produces carbon differentials of up to 15.3× (Norway vs Singapore in pilot data) — an order of magnitude larger than any configuration optimisation measured. This has practical implications:
+The multi-region SCI analysis reveals that runner location produces carbon differentials of up to 15.3× (Norway vs Singapore in pilot data), which is an order of magnitude larger than any configuration optimisation measured. This has practical implications:
 
 1. For organisations with latitude over runner region (self-hosted runners, enterprise GitHub with regional selection), geographic optimisation delivers more carbon impact than any YAML change
 2. For the majority of open-source projects using default GitHub-hosted runners without regional control, configuration refinement remains the primary actionable lever

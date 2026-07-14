@@ -14,7 +14,7 @@ This dissertation makes the following contributions:
 
 1. **First multi-strategy, cross-project empirical comparison** of CI/CD pipeline refinement strategies using standardised carbon measurement (SCI / ISO/IEC 21031:2024)
 
-2. **A replicable green CI/CD audit methodology** applicable to any GitHub Actions project: Eco-CI instrumentation pattern, pre-study audit checklist, data collection scripts, and analysis notebooks — all publicly available
+2. **A replicable green CI/CD audit methodology** applicable to any GitHub Actions project: Eco-CI instrumentation pattern, pre-study audit checklist, data collection scripts, and analysis notebooks, all publicly available
 
 3. **Evidence-based recommendations** for open-source maintainers on which pipeline configuration changes produce the largest measured carbon reductions relative to implementation effort
 
@@ -32,7 +32,7 @@ The primary limitations are: (1) Eco-CI captures CPU energy only, so dependency 
 
 ## 6.4 Future Work
 
-- **30-run full protocol:** Complete the statistical analysis with the full dataset (Wilcoxon, Bonferroni, Cliff's delta) — this is the immediate next step for this study
+- **30-run full protocol:** Complete the statistical analysis with the full dataset (Wilcoxon, Bonferroni, Cliff's delta). This is the immediate next step.
 - **Multi-project expansion:** Apply the same four configurations to the remaining 5–7 projects across languages (JavaScript/TypeScript, Java, Go) to address RQ2 fully
 - **C3 isolation:** Collect C3 consolidation-only data to isolate the consolidation effect independently of caching
 - **Self-hosted runner comparison:** Test whether Eco-CI measurements on self-hosted runners (with RAPL validation) confirm the model-based estimates on GitHub-hosted runners
@@ -43,4 +43,4 @@ The primary limitations are: (1) Eco-CI captures CPU energy only, so dependency 
 
 ## 6.5 Final Statement
 
-*[To be written last — after results and discussion are complete.]*
+*[To be written last, after results and discussion are complete.]*

@@ -37,7 +37,7 @@ To address RQ2 (cross-project consistency), projects are selected to span at lea
 
 The pilot study reported in this dissertation uses **HTTPie CLI** (Python, ~4,000 LOC, 34,000+ stars) as the first and anchor project. Additional projects are selected and forked in the weeks following the initial pilot.
 
-### 3.2.3 HTTPie CLI — Pilot Project
+### 3.2.3 HTTPie CLI: Pilot Project
 
 **HTTPie CLI** (https://github.com/httpie/cli) is a production-grade Python HTTP client at version 3.2.4. Its pre-study GitHub Actions configuration consists of three independent workflow files (`tests.yml`, `code-style.yml`, `coverage.yml`) that each reinstall all project dependencies from scratch on every trigger, with no caching strategy. This is representative of how mature Python open-source projects accumulate CI configuration without revisiting default behaviours over time.
 
@@ -70,15 +70,15 @@ Four configurations are evaluated per project. Each represents an independently 
 
 Each workflow is instrumented with the Eco-CI Energy Estimation tool (`green-coding-solutions/eco-ci-energy-estimation@v5`) following a consistent pattern:
 
-1. `task: start-measurement` — initialises CPU utilisation sampling at job start
-2. `task: get-measurement` with `label:` — captures cumulative energy at each stage boundary
-3. `task: display-results` with `json-output: true` — serialises all measurements to `/tmp/eco-ci/eco-ci-results.json`
-4. `actions/upload-artifact@v4` — uploads the JSON output as a workflow artifact
+1. `task: start-measurement`: initialises CPU utilisation sampling at job start
+2. `task: get-measurement` with `label:`: captures cumulative energy at each stage boundary
+3. `task: display-results` with `json-output: true`: serialises all measurements to `/tmp/eco-ci/eco-ci-results.json`
+4. `actions/upload-artifact@v4`: uploads the JSON output as a workflow artifact
 
 **Critical implementation requirements:**
-- `if: always()` on every `get-measurement` step — prevents step-skipping on test failure
-- `continue-on-error: true` on all Eco-CI steps — prevents measurement tool errors from aborting jobs
-- `cache-dependency-path: setup.cfg` on C2/C4 `setup-python` steps — required because HTTPie uses `setup.cfg`, not `requirements.txt`
+- `if: always()` on every `get-measurement` step: prevents step-skipping on test failure
+- `continue-on-error: true` on all Eco-CI steps: prevents measurement tool errors from aborting jobs
+- `cache-dependency-path: setup.cfg` on C2/C4 `setup-python` steps: required because HTTPie uses `setup.cfg`, not `requirements.txt`
 
 A pre-study audit of all four branches was conducted before data collection, identifying and correcting six critical issues including unresolved merge conflicts, missing `workflow_dispatch` triggers, and an incorrect YAML scope for `continue-on-error`. Full audit findings are documented in Appendix A.
 
@@ -90,12 +90,12 @@ Energy is measured at the following stage boundaries, labelled consistently acro
 
 | Stage Label | Pipeline Phase |
 |---|---|
-| `checkout` | `actions/checkout@v4` — repository clone |
-| `dependency-installation` | `make install` / `pip install` — package installation |
-| `lint` | `make codestyle` — static analysis (code-style job) |
-| `test-execution` | `make test` — full test suite (Python 3.10, 3.11, 3.12 matrix) |
-| `coverage` | `make test-cover` — test suite with coverage instrumentation |
-| `dist-test` | `make test-dist` — distribution build validation |
+| `checkout` | `actions/checkout@v4`: repository clone |
+| `dependency-installation` | `make install` / `pip install`: package installation |
+| `lint` | `make codestyle`: static analysis (code-style job) |
+| `test-execution` | `make test`: full test suite (Python 3.10, 3.11, 3.12 matrix) |
+| `coverage` | `make test-cover`: test suite with coverage instrumentation |
+| `dist-test` | `make test-dist`: distribution build validation |
 
 ---
 
@@ -139,18 +139,18 @@ Result: **gCO₂eq per CI run**
 
 All statistical analysis is performed in `analysis/energy_analysis.ipynb` using Python (scipy, pandas, numpy, matplotlib).
 
-**Step 1 — Normality testing:** Shapiro-Wilk tests are applied to each (configuration × stage) sample distribution. The dependency-installation stage is expected to be non-normally distributed due to network variability (PyPI CDN response times); test execution is expected to be approximately normally distributed for CPU-bound workloads.
+**Step 1: Normality testing.** Shapiro-Wilk tests are applied to each (configuration × stage) sample distribution. The dependency-installation stage is expected to be non-normally distributed due to network variability (PyPI CDN response times); test execution is expected to be approximately normally distributed for CPU-bound workloads.
 
-**Step 2 — Primary comparison:** Wilcoxon signed-rank tests compare total energy per CI run between C1 (baseline) and each of C2, C3, C4. Paired samples (same project, same runs) justify the signed-rank variant over the unpaired Mann-Whitney U test.
+**Step 2: Primary comparison.** Wilcoxon signed-rank tests compare total energy per CI run between C1 (baseline) and each of C2, C3, C4. Paired samples (same project, same runs) justify the signed-rank variant over the unpaired Mann-Whitney U test.
 
-**Step 3 — Multiple comparisons correction:** Bonferroni correction adjusts the significance threshold for three simultaneous comparisons:
+**Step 3: Multiple comparisons correction.** Bonferroni correction adjusts the significance threshold for three simultaneous comparisons:
 ```
 α_corrected = 0.05 / 3 = 0.017
 ```
 
-**Step 4 — Effect size:** Cliff's delta (δ) is computed for each comparison. Interpretation follows Romano et al. (2006): |δ| < 0.147 negligible, < 0.330 small, < 0.474 medium, ≥ 0.474 large.
+**Step 4: Effect size.** Cliff's delta (δ) is computed for each comparison. Interpretation follows Romano et al. (2006): |δ| < 0.147 negligible, < 0.330 small, < 0.474 medium, ≥ 0.474 large.
 
-**Step 5 — Cross-project analysis (RQ2):** Effect sizes and percentage reductions are compared across projects by language and size category to assess consistency of strategy effectiveness.
+**Step 5: Cross-project analysis (RQ2).** Effect sizes and percentage reductions are compared across projects by language and size category to assess consistency of strategy effectiveness.
 
 **Rationale for non-parametric approach:** Given the expected non-normality of the dependency-installation stage, non-parametric tests are preferred throughout for consistency. With n = 30 per configuration, Wilcoxon has >95% power to detect medium effect sizes (|δ| > 0.33) at α = 0.017.
 
