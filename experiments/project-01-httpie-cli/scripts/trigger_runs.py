@@ -42,6 +42,8 @@ Usage examples:
         --start-from 15
 """
 
+from __future__ import annotations
+
 import argparse
 import os
 import sys
