@@ -11,33 +11,33 @@ Requirements:
 
 Environment variables (required):
     GITHUB_TOKEN   personal access token with repo + workflow scopes
-    GITHUB_REPO    owner/repo  e.g. Umer-2612/httpie-cli-carbon-study
+    GITHUB_REPO    owner/repo  e.g. Umer-2612/msc-devops-dissertation
 
 Usage examples:
 
-    # 30 runs on C2 (pip-cached), tests workflow only
+    # 30 runs of C1 baseline tests (all on main branch)
     python scripts/trigger_runs.py \\
-        --branch experiment/c2-pip-cache \\
-        --workflow tests.yml \\
+        --branch main \\
+        --workflow p01-httpie-c1-tests.yml \\
         --runs 30
 
-    # 30 runs on C4 (combined), consolidated workflow
+    # 30 runs of C4 combined workflow
     python scripts/trigger_runs.py \\
-        --branch experiment/c4-combined \\
-        --workflow ci-consolidated.yml \\
+        --branch main \\
+        --workflow p01-httpie-c4-combined.yml \\
         --runs 30
 
     # Shorter interval for testing (60 s instead of default 300 s)
     python scripts/trigger_runs.py \\
-        --branch experiment/c2-pip-cache \\
-        --workflow tests.yml \\
+        --branch main \\
+        --workflow p01-httpie-c2-tests.yml \\
         --runs 5 \\
         --interval 60
 
     # Resume from run 15 if the script was interrupted
     python scripts/trigger_runs.py \\
-        --branch experiment/c2-pip-cache \\
-        --workflow tests.yml \\
+        --branch main \\
+        --workflow p01-httpie-c1-tests.yml \\
         --runs 30 \\
         --start-from 15
 """
