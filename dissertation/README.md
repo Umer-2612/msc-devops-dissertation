@@ -1,4 +1,4 @@
-# MSc Dissertation — Master Working Directory
+# MSc Dissertation: Master Working Directory
 
 **Title:** Greening the Pipeline: An Empirical Comparison of CI/CD Refinement Strategies and Their Carbon Impact Across Open-Source Projects
 
@@ -22,8 +22,8 @@ msc-devops-dissertation/
 └── README.md              ← master overview (this file)
 ```
 
-**Writing lives in** `dissertation/` — chapters, bibliography, appendices.  
-**Practical work lives in** `experiments/` — workflows, data, analysis notebooks, paper drafts.  
+**Writing lives in** `dissertation/`: chapters, bibliography, appendices.  
+**Practical work lives in** `experiments/`: workflows, data, analysis notebooks, paper drafts.  
 **As more projects are added**, new folders appear under `experiments/` (project-02, project-03…).
 
 The experiment branches (C1–C4 on GitHub Actions) are at:  
@@ -38,10 +38,10 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 | 1 | Introduction | Draft written | ~1,700 |
 | 2 | Literature Review | Outline + 2 sections written | ~3,500 |
 | 3 | Methodology | Outline written | ~2,500 |
-| 4 | Results | Pilot data written — full data collection in progress | ~3,000 |
+| 4 | Results | Pilot data written; full data collection in progress | ~3,000 |
 | 5 | Discussion | Outline + structure written | ~2,500 |
 | 6 | Conclusion | Outline written | ~1,000 |
-| — | Abstract | Not started (write last) | max 250 words |
+| n/a | Abstract | Not started (write last) | max 250 words |
 
 **Target total:** ~15,000 words
 
@@ -64,7 +64,7 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 
 | Date | Milestone |
 |---|---|
-| 15 July 2026 (Tue) | Progress meeting — show Introduction draft + pilot data |
+| 15 July 2026 (Tue) | Progress meeting: show Introduction draft + pilot data |
 | 25 July 2026 | Complete project selection (all 6–8 projects forked) |
 | 15 Aug 2026 | All 30-run data collected across C1–C4 |
 | 29 Aug 2026 | Statistical analysis complete |

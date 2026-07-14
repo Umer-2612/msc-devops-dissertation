@@ -1,4 +1,4 @@
-# HTTPie CLI — CI/CD Carbon Emissions Study
+# HTTPie CLI: CI/CD Carbon Emissions Study
 
 > **Dissertation artefact** for the MSc DevOps dissertation:
 > *"Greening the Pipeline: An Empirical Comparison of CI/CD Refinement Strategies and Their Carbon Impact Across Open-Source Projects"*
@@ -11,7 +11,7 @@
 
 ## What This Repository Is
 
-This is a research fork of [httpie/cli](https://github.com/httpie/cli) — a production Python HTTP client with 34,000+ GitHub stars. It instruments the project's GitHub Actions CI/CD pipeline with the [Eco-CI Energy Estimation](https://github.com/green-coding-solutions/eco-ci-energy-estimation) tool across four progressively refined configurations to measure and compare their carbon emissions.
+This is a research fork of [httpie/cli](https://github.com/httpie/cli), a production Python HTTP client with 34,000+ GitHub stars. It instruments the project's GitHub Actions CI/CD pipeline with the [Eco-CI Energy Estimation](https://github.com/green-coding-solutions/eco-ci-energy-estimation) tool across four progressively refined configurations to measure and compare their carbon emissions.
 
 The study applies the [Software Carbon Intensity (SCI) specification](https://sci-guide.greensoftware.foundation) (ISO/IEC 21031:2024) as the measurement framework.
 
@@ -40,7 +40,7 @@ Real Eco-CI measurements from GitHub-hosted `ubuntu-latest` runners (Azure, 472 
 | Dependency installation energy | 389 J | 323 J | **−16.8%** |
 | SCI score (test matrix, Ireland grid) | 0.142 gCO₂eq | 0.132 gCO₂eq | **−7.1%** |
 
-**Multi-region finding:** Norway (25 gCO₂eq/kWh) vs Singapore (408 gCO₂eq/kWh) produces a **15.3× carbon differential** for identical pipelines — runner geography dominates configuration-level optimisation.
+**Multi-region finding:** Norway (25 gCO₂eq/kWh) vs Singapore (408 gCO₂eq/kWh) produces a **15.3× carbon differential** for identical pipelines. Runner geography dominates configuration-level optimisation.
 
 Full results in [`paper.md`](paper.md) and pilot tables in [`dissertation/chapters/04_results.md`](../dissertation/chapters/04_results.md).
 
@@ -52,10 +52,10 @@ Full results in [`paper.md`](paper.md) and pilot tables in [`dissertation/chapte
 httpie-cli-carbon-study/
 ├── .github/
 │   └── workflows/
-│       ├── tests.yml           # C1/C2 — test suite with Eco-CI (3 Python versions)
-│       ├── code-style.yml      # C1/C2 — lint with Eco-CI
-│       ├── coverage.yml        # C1/C2 — coverage with Eco-CI
-│       └── ci-consolidated.yml # C3/C4 — all 3 stages in one workflow
+│       ├── tests.yml           # C1/C2: test suite with Eco-CI (3 Python versions)
+│       ├── code-style.yml      # C1/C2: lint with Eco-CI
+│       ├── coverage.yml        # C1/C2: coverage with Eco-CI
+│       └── ci-consolidated.yml # C3/C4: all 3 stages in one workflow
 ├── scripts/
 │   └── collect_results.py      # Downloads + parses Eco-CI GitHub Actions artifacts → CSV
 ├── analysis/
@@ -123,7 +123,7 @@ All four experiment branches underwent systematic audit before data collection. 
 | `continue-on-error` inside `with:` block (silently ignored) | C1 | Critical | Moved to step level |
 | Unresolved merge conflicts in all 3 workflow files | C2 | Critical | Rewrote from clean definitions |
 | `workflow_dispatch` absent from all C2 workflows | C2 | Critical | Added to all 3 files |
-| `cache: pip` missing `cache-dependency-path: setup.cfg` | C2, C4 | Critical | Added — HTTPie uses `setup.cfg` not `requirements.txt` |
+| `cache: pip` missing `cache-dependency-path: setup.cfg` | C2, C4 | Critical | Added: HTTPie uses `setup.cfg` not `requirements.txt` |
 | HTTPie source tree absent from C3/C4 branches | C3, C4 | Critical | Imported from C1 via selective checkout |
 | `ci-consolidated.yml` present on C1/C2 (could corrupt data) | C1, C2 | Medium | Removed from non-C3/C4 branches |
 
@@ -171,6 +171,6 @@ Full audit details: [`RESEARCH_LOG.md`](RESEARCH_LOG.md)
 
 ## Acknowledgements
 
-- [HTTPie CLI](https://github.com/httpie/cli) — subject project (MIT licence)
-- [Eco-CI Energy Estimation](https://github.com/green-coding-solutions/eco-ci-energy-estimation) — Green Coding Solutions (MIT licence)
-- [Software Carbon Intensity (SCI) Standard](https://sci-guide.greensoftware.foundation) — Green Software Foundation / ISO/IEC 21031:2024
+- [HTTPie CLI](https://github.com/httpie/cli): subject project (MIT licence)
+- [Eco-CI Energy Estimation](https://github.com/green-coding-solutions/eco-ci-energy-estimation): Green Coding Solutions (MIT licence)
+- [Software Carbon Intensity (SCI) Standard](https://sci-guide.greensoftware.foundation): Green Software Foundation / ISO/IEC 21031:2024

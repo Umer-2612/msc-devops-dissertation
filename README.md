@@ -33,14 +33,14 @@ msc-devops-dissertation/
 
 ---
 
-## Current Status (July 2026 — Week 2)
+## Current Status (July 2026, Week 2)
 
 | Area | Progress |
 |---|---|
 | Literature review | 9 papers reviewed + 3 new 2026 papers found |
-| Chapter 1 — Introduction | Complete draft |
-| Chapter 2 — Literature Review | Sections 2.1–2.5 written |
-| Chapter 3 — Methodology | Full outline written |
+| Chapter 1: Introduction | Complete draft |
+| Chapter 2: Literature Review | Sections 2.1–2.5 written |
+| Chapter 3: Methodology | Full outline written |
 | First project (HTTPie CLI) | 4 branches set up, pilot data collected |
 | Full 30-run data collection | In progress |
 
@@ -72,5 +72,5 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 | `dissertation/chapters/04_results.md` | Results chapter with pilot data |
 | `dissertation/references/bibliography.md` | All 18 references in Harvard format |
 | `experiments/project-01-httpie-cli/README.md` | Project summary, pilot results, how to run |
-| `experiments/project-01-httpie-cli/RESEARCH_LOG.md` | Audit log — decisions and findings |
+| `experiments/project-01-httpie-cli/RESEARCH_LOG.md` | Audit log: decisions and findings |
 | `notes/weekly_log.md` | Week-by-week progress log |
