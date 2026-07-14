@@ -1,11 +1,11 @@
-# New Papers Found — July 2026 Search
+# New Papers Found: July 2026 Search
 
 Searched 12 July 2026. These papers were NOT in the original June 2026 literature review.
 Papers are peer-reviewed or clearly identifiable academic preprints. No AI-generated content included.
 
 ---
 
-## Paper 10: IEEE (2026) — Energy Consumption of CI in Java Projects
+## Paper 10: IEEE (2026), Energy Consumption of CI in Java Projects
 
 **Full Title:** On the Energy Consumption of Continuous Integration in Open-Source Java Projects
 **Source:** IEEE Conference Proceedings 2026 (DOI source: IEEE Xplore Document 11500151)
@@ -23,17 +23,17 @@ This is the most directly relevant new 2026 paper for this dissertation. It:
 - Literature Review Section 2.2.3: cite as the strongest empirical validation of dependency caching's energy impact (2026 peer-reviewed IEEE paper)
 - Introduction Section 1.2.3: cite as direct evidence that "enabling dependency caching cuts energy by 30% on average" to establish empirical stakes
 - Methodology Section 3.2: cite to justify why caching is included as a primary experimental strategy
-- Discussion: compare our Python/HTTPie results against their Java findings — if consistent, supports cross-language generalisability (RQ2)
+- Discussion: compare our Python/HTTPie results . If consistent, this supports cross-language generalisability (RQ2)
 
 **Gap this paper leaves (for our dissertation):**
-- Java only (Maven/Gradle) — no Python or other languages
+- Java only (Maven/Gradle), no Python or other languages
 - Does not compare consolidation or trigger filtering strategies
-- Does not use SCI framework — energy in kWh only, no gCO₂eq per run
+- Does not use SCI framework, energy in kWh only, no gCO₂eq per run
 - Does not apply cross-project statistical comparison across configurations
 
 ---
 
-## Paper 11: Ehlers et al. (2026) — PPTAM𝜂: Energy Aware CI/CD for Containers
+## Paper 11: Ehlers et al. (2026), PPTAM𝜂: Energy Aware CI/CD for Containers
 
 **Full Title:** PPTAM𝜂: Energy Aware CI/CD Pipeline for Container Based Applications
 **Authors:** Ehlers et al. (confirmed via arXiv)
@@ -58,7 +58,7 @@ Integrates power and energy measurement into GitLab CI for containerised API sys
 
 ---
 
-## Paper 12: Alves et al. (2024) — Software Frugality and CI Energy
+## Paper 12: Alves et al. (2024), Software Frugality and CI Energy
 
 **Full Title:** Software Frugality in an Accelerating World: the Case of Continuous Integration
 **ArXiv:** https://arxiv.org/abs/2410.15816
@@ -83,12 +83,12 @@ First large-scale analysis of GitHub Actions workflow energy consumption via loc
 **Event:** 10th IEEE/ACM International Workshop on Green and Sustainable Software
 **Co-located with:** ICSE 2026, Rio de Janeiro, Brazil, April 12–18, 2026
 **Proceedings URL:** https://conf.researchr.org/home/icse-2026/greens-2026
-**ACM DL:** https://dl.acm.org/doi/proceedings/10.5555/979-8-3315-3815-6 (GREENS 2025 — check for 2026 proceedings)
+**ACM DL:** https://dl.acm.org/doi/proceedings/10.5555/979-8-3315-3815-6 (GREENS 2025, check for 2026 proceedings)
 
 **Why Relevant:**
 - This is the exact target venue listed in `paper.md` for the HTTPie CLI study
 - The dissertation's empirical work directly targets the GREENS workshop audience
-- Review the 2026 proceedings for any papers on CI/CD carbon measurement that may overlap with this work — check for priority/novelty conflicts
+- Review the 2026 proceedings for any papers on CI/CD carbon measurement that may overlap , check for priority/novelty conflicts
 
 Download GREENS 2026 proceedings and check for any papers that overlap with this dissertation's methodology. If a paper with a similar multi-strategy CI/CD comparison was published at GREENS 2026, it needs to be cited and the dissertation's contribution differentiated accordingly.
 
