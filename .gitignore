@@ -1,5 +1,5 @@
-# Reference PDFs — too large for version control
-*.pdf
+# # Reference PDFs — too large for version control
+# *.pdf
 
 # macOS
 .DS_Store
