@@ -7,8 +7,8 @@
 .LSOverride
 
 
-# ATU Word template (binary — not useful to diff)
-*.docx
+# # ATU Word template (binary — not useful to diff)
+# *.docx
 
 # Python
 __pycache__/
