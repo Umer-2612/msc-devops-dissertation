@@ -50,6 +50,8 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 **Green Software Foundation** (2024) *Software Carbon Intensity (SCI) Specification*, v1.0. Adopted as ISO/IEC 21031:2024. Available at: https://sci-guide.greensoftware.foundation [Accessed 15 June 2026].
 
+**Gson** (Google, 2025) *Gson: A Java Serialization/Deserialization Library for JSON*. Open-source software, size-axis project (Section 3.2.3). Available at: https://github.com/google/gson [Accessed 23 August 2026].
+
 ---
 
 ## H
@@ -123,12 +125,12 @@ Online sources constitute less than 50% of the total reference list, in accordan
 | Type | Count | % |
 |---|---|---|
 | Peer-reviewed journal articles | 4 | 17% |
-| Peer-reviewed conference papers | 8 | 35% |
-| Standards (ISO/IEC, GSF) | 2 | 9% |
+| Peer-reviewed conference papers | 8 | 33% |
+| Standards (ISO/IEC, GSF) | 2 | 8% |
 | Regulatory documents (EU) | 1 | 4% |
-| Open-access preprints (under review) | 2 | 9% |
+| Open-access preprints (under review) | 2 | 8% |
 | Online-only / blog | 1 | 4% |
-| Open-source software (subject projects and tooling) | 5 | 22% |
-| **Total** | **23** | |
+| Open-source software (subject projects and tooling) | 6 | 25% |
+| **Total** | **24** | |
 
-Online-only sources (blog + subject-project and tool repositories): 6 of 23 (~26%) — within the 50% ATU guideline. The five software citations (HTTPie, got, Retrofit, resty, and Eco-CI) are repositories rather than peer-reviewed literature, cited because they are the direct objects of study or instrumentation (Sections 3.2.3, 3.4), not as evidentiary sources for claims.
+Online-only sources (blog + subject-project and tool repositories): 7 of 24 (~29%) — within the 50% ATU guideline. The six software citations (HTTPie, got, Retrofit, resty, Gson, and Eco-CI) are repositories rather than peer-reviewed literature, cited because they are the direct objects of study or instrumentation (Sections 3.2.3, 3.4), not as evidentiary sources for claims.

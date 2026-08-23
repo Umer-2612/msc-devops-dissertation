@@ -40,19 +40,19 @@ A secondary arm addresses the size axis, motivated directly by the literature re
 
 ### 3.2.3 Selected Projects
 
-The study applies the four-configuration protocol to the following projects. Projects are instrumented in sequence, and the number completed depends on the remaining timeline; the Python anchor plus the JavaScript and Java parallels form the committed core that is sufficient for a cross-language claim, with the Go parallel and the size-axis project included as time permits.
+The study applies the four-configuration protocol to all five projects below: the Python anchor, three cross-language HTTP-client parallels, and one size-axis project.
 
 | # | Project | Language | Ecosystem / manager | Licence | Role |
 |---|---|---|---|---|---|
-| 1 | HTTPie CLI | Python | pip (`setup.cfg`) | BSD-3 | Anchor; pilot complete |
+| 1 | HTTPie CLI | Python | pip (`setup.cfg`) | BSD-3 | Anchor |
 | 2 | got | JavaScript / TypeScript | npm | MIT | Cross-language parallel |
 | 3 | Retrofit | Java | Gradle | Apache 2.0 | Cross-language parallel |
-| 4 | Resty (go-resty) | Go | Go modules | MIT | Cross-language parallel (time permitting) |
-| 5 | Larger project (size axis) | to be confirmed | Maven or npm | Permissive | Size-axis observation (time permitting) |
+| 4 | resty (go-resty) | Go | Go modules | MIT | Cross-language parallel |
+| 5 | Gson | Java | Maven | Apache 2.0 | Size-axis observation |
 
 *Table 3.2: Projects selected for the study, their role, and the ecosystem exercised.*
 
-Projects 2 to 4 are all HTTP-client libraries, matching the domain of the anchor. Each satisfies the inclusion criteria: a permissive licence, a self-contained test suite that runs on `ubuntu-latest` without external services (for example, got and Retrofit spin up local mock servers rather than calling the network), and a tagged release to pin against. Project 5 is selected later from the size-axis candidates and is reported only if the schedule allows. Bibliographic references for each project repository are given alongside HTTPie's in the References section.
+Projects 2 to 4 are all HTTP-client libraries, matching the domain of the anchor. Each satisfies the inclusion criteria: a permissive licence, a self-contained test suite that runs on `ubuntu-latest` without external services (for example, got and Retrofit spin up local mock servers rather than calling the network), and a tagged release to pin against. Project 5, Gson, is a larger Maven multi-module Java project (24,000+ stars) selected to satisfy the size axis described in Section 3.2.2: a different domain (JSON serialisation rather than an HTTP client) and a larger, more complex build than any of the cross-language parallels. Bibliographic references for each project repository are given alongside HTTPie's in the References section.
 
 ### 3.2.4 HTTPie CLI: The Anchor Project
 

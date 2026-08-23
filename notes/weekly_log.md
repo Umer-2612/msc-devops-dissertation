@@ -69,17 +69,52 @@
 
 ---
 
-## Upcoming Weeks
+## Week 8: 17–23 August 2026
 
-| Week | Dates | Focus |
+**Focus:** Get the pipeline actually working end to end; supervisor feedback pass on the dissertation text
+
+### Status check at the start of this week
+
+An audit found that, despite the Week 1–3 setup work, **no CI workflow had ever produced a successful run**. Only two runs existed in GitHub Actions history (both `P01 HTTPie C1 Tests`, triggered 14 July), both failing at `make test`. `results/raw_data.csv` had a header row and nothing else. Every energy/SCI figure written into the dissertation so far (the "7.1% pilot finding") came from earlier local instrumentation testing, not from a real, committed-workflow run — this is now stated explicitly as a provenance note wherever those figures appear (Chapter 4 §4.6, Chapter 5 §5.3).
+
+### Done
+
+- **Restructured the dissertation** per supervisor feedback: split Design out as a new Chapter 4 (pipeline architecture, instrumentation, worked SCI example, Mermaid diagrams), expanded the Literature Review (title + one-liner per paper, wider gap analysis, key-takeaway synthesis), added an Introduction problem statement/objectives/contributions preview, renumbered Results→5, Discussion→6, Conclusion→7, added bibliography entries for got/Retrofit/resty.
+- **Diagnosed and fixed the real blocker.** Reproduced `make test` locally against `httpie/cli@3.2.4`: found two independent, unrelated-to-our-config causes.
+  - **Bug C1-05:** `charset_normalizer`'s newer releases changed Big5 charset detection versus what HTTPie 3.2.4's tests expect (unpinned dependency, resolved fresh each install).
+  - **Bug C1-06:** Python 3.12's `argparse` changed how it formats invalid-choice error messages (dropped quotes), breaking one exact-string test assertion — only surfaced once we ran the real Python-version matrix live.
+  - Fixed both via a `PYTEST_ADDOPTS` deselection applied identically across all 8 workflow files and the full Python 3.10/3.11/3.12 matrix, so no bias is introduced between configurations. Logged in `RESEARCH_LOG.md` and Appendix A as C1-05/C1-06.
+- **First real, verified pipeline data.** Triggered one validation run per configuration (C1–C4); all four completed successfully with valid Eco-CI artifacts — the first time every configuration has actually worked. Example real numbers (C1 baseline, not the 30-run protocol): 330–463 J per Python version, SCI ≈ 0.070–0.097 gCO₂eq/run.
+- Fixed a real security gap: `.env` (holding the GitHub token) was not in `.gitignore`.
+
+### Blockers
+
+- Artifact **download** (not triggering) is blocked in the assistant's sandbox — GitHub's artifact API redirects to Azure blob storage, which isn't on the allowlist. Workaround: trigger/poll works fine via the API; artifact retrieval for `collect_results.py` needs to be run locally.
+- Still no n=30 data for any project. Decision made: validate all 5 projects (one clean run per config each) before committing to the expensive full 30-run protocol on any of them, to avoid discovering a blocking bug mid-batch.
+
+### Decision Log
+
+- Fix dependency/interpreter-drift test failures via `PYTEST_ADDOPTS` deselection rather than modifying HTTPie's source — keeps the subject code frozen per Section 3.2.4, and the fix is symmetric across all four configurations so it can't bias the comparison.
+- Validate-then-scale: get one clean run per configuration across all 5 projects first, then run the full n=30 protocol across all of them, rather than finishing one project's full 30 runs before starting the next.
+
+---
+
+## Final Sprint Plan: 23–28 August 2026 (hard deadline)
+
+**The submission deadline is 28 August 2026 — 5 days from today.** This replaces the earlier week-by-week plan below, which assumed a September deadline.
+
+| Day | Date | Focus |
 |---|---|---|
-| Week 4 | 20–26 Jul | Trigger C4 runs; select + fork additional projects |
-| Week 5 | 27 Jul–2 Aug | Additional project baselines; full Methodology chapter |
-| Week 6 | 3–9 Aug | Additional project C2/C3/C4 runs; start Results chapter |
-| Week 7 | 10–16 Aug | Complete all data collection |
-| Week 8 | 17–23 Aug | Statistical analysis (notebook) |
-| Week 9 | 24–30 Aug | Cross-project analysis; Results chapter full draft |
-| Week 10 | 31 Aug–6 Sep | Discussion chapter |
-| Week 11 | 7–13 Sep | All chapters drafted; Conclusion |
-| Week 12 | 14–20 Sep | Polish, proof-read, format in ATU Word template |
-| Week 13 | 21–27 Sep | Final submission |
+| Day 1 | Sat 23 Aug | HTTPie pipeline fixed and validated (done — all 4 configs green, real Eco-CI data confirmed). Dissertation restructure per supervisor feedback (done). |
+| Day 2 | Sun 24 Aug | Instrument remaining projects using the external-checkout pattern; validate one run per config each. Start full-protocol data collection on whichever projects are validated first, running in parallel in the background. |
+| Day 3 | Mon 25 Aug | Continue/finish data collection across all validated projects. Begin statistical analysis as each project's dataset completes — don't wait for all projects before starting. |
+| Day 4 | Tue 26 Aug | Finish statistical analysis (Wilcoxon, Bonferroni, Cliff's delta); populate Chapter 5 figures and tables with real numbers; write Chapter 6 (Discussion) against actual findings, not the pilot narrative. |
+| Day 5 | Wed 27 Aug | Finalise Chapter 7 (Conclusion); full proofread; fix any remaining `[Figure/Table TBD]` placeholders; format check against ATU template. |
+| Submission | Thu 28 Aug | Final submission. |
+
+**Given 5 days, not 5 weeks, scope has to be prioritised honestly.** Running the full n=30 protocol across all 5 projects, in full statistical rigor, is unlikely to fit alongside the writing and analysis time still required. See the scope discussion below before committing further background CI time.
+
+**Scope decision (23 Aug):** proceeding with all 5 projects at full n=30, accepting the schedule risk this carries. Setup/validation for got, Retrofit, resty, and the size-axis project happens today and tomorrow; the full 30-run protocol runs in parallel across all validated projects as each becomes ready, rather than waiting for all 5 before starting any data collection.
+
+
+

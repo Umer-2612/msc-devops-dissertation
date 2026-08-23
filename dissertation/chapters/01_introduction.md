@@ -32,7 +32,7 @@ The energy cost of CI/CD pipelines is not primarily a consequence of the work pe
 
 These patterns are not the product of deliberate decisions to consume energy; they reflect engineering choices made without visibility into their environmental consequences. Pinto and Castor (2017) observe that energy efficiency has historically been treated as a concern for embedded or high-performance computing, not for the typical application developer. Engineers who routinely optimise query latency and memory footprint have no equivalent instinct or toolchain for measuring what a git push costs the planet.
 
-In summary, the three patterns identified here, unconditional reinstallation, fragmented workflows, and unrestricted triggers, are the practical target of this dissertation's three refinement strategies. Each maps directly onto one of the four experimental configurations introduced in Chapter 3: dependency caching addresses the first pattern, workflow consolidation the second, and path-based filtering the third, with a fourth configuration combining all three.
+The three patterns identified here, unconditional reinstallation, fragmented workflows, and unrestricted triggers, are the practical target of this dissertation's three refinement strategies. Each maps directly onto one of the four experimental configurations introduced in Chapter 3: dependency caching addresses the first pattern, workflow consolidation the second, and path-based filtering the third, with a fourth configuration combining all three.
 
 ### 1.2.3 The Measurement and Regulatory Gap
 
@@ -46,7 +46,7 @@ Third, the EU Corporate Sustainability Reporting Directive (CSRD), effective fro
 
 Despite these developments, a critical gap remains. No existing study has experimentally applied and compared multiple CI/CD pipeline refinement strategies across diverse real-world projects using standardised carbon measurement. Saavedra et al. (2025) estimate ecosystem-scale footprints but provide no project-level guidance. Bouzenia and Pradel (2024) document optimisation adoption rates and estimate VM time savings, but do not translate these into carbon units. Claßen et al. (2023) demonstrate carbon-aware temporal scheduling but do not evaluate pipeline configuration changes. Alamer and Alharbi (2025) systematically review the literature and identify the absence of empirical comparative data as the primary gap. That is the gap this dissertation fills.
 
-In summary, the standard, the tool, and the regulatory pressure now each exist independently. What has not yet existed is a study that puts all three together to test, in a controlled way, which specific pipeline changes are actually worth making, and by how much.
+The standard, the tool, and the regulatory pressure now each exist independently, but no study has put all three together to test, in a controlled way, which specific pipeline changes are actually worth making, and by how much.
 
 ### 1.2.4 Problem Statement
 
