@@ -22,7 +22,6 @@ Output:
 """
 
 import csv
-import json
 import os
 import re
 import sys
@@ -159,39 +158,45 @@ def download_artifact(artifact: dict) -> bytes | None:
 def parse_eco_ci_json(raw_bytes: bytes, artifact_name: str) -> list[dict]:
     """
     Extract measurement entries from an Eco-CI artifacts zip.
-    Eco-CI writes an 'eco-ci-results.json' file (array of measurement objects).
-    Field names are matched defensively since Eco-CI's exact schema has
-    varied across releases; verify against a real downloaded artifact
-    before relying on this for the final dataset.
+
+    Eco-CI v5.3.0 does not write a JSON file into the artifact regardless of
+    the `json-output: true` input (that setting only affects the console log
+    format). The artifact instead contains `vars.sh`, a shell-sourceable file
+    with one block of `ECO_CI_MEASUREMENT_<N>_<FIELD>='value'` lines per
+    labelled stage, e.g.:
+
+        ECO_CI_MEASUREMENT_1_LABEL='checkout'
+        ECO_CI_MEASUREMENT_1_ENERGY='4.83668'
+        ECO_CI_MEASUREMENT_1_TIME='1.09'
+
+    `ECO_CI_MEASUREMENT_COUNT` and `ECO_CI_CO2EQ_ENERGY` appear multiple
+    times (once per stage, as a running total) and are not per-stage values;
+    they are ignored here in favour of the per-N fields, which appear
+    exactly once each.
     """
     rows = []
     try:
         with zipfile.ZipFile(BytesIO(raw_bytes)) as zf:
-            json_files = [n for n in zf.namelist() if n.endswith(".json")]
-            if not json_files:
-                print(f"  WARNING: No JSON files found in artifact '{artifact_name}'")
+            vars_files = [n for n in zf.namelist() if n.endswith("vars.sh")]
+            if not vars_files:
+                print(f"  WARNING: No vars.sh found in artifact '{artifact_name}'")
                 return rows
-            for fname in json_files:
-                with zf.open(fname) as f:
-                    data = json.load(f)
-                    if isinstance(data, list):
-                        measurements = data
-                    elif isinstance(data, dict):
-                        measurements = data.get("measurements", data.get("data", [data]))
-                    else:
-                        continue
+            with zf.open(vars_files[0]) as f:
+                text = f.read().decode("utf-8", errors="replace")
 
-                    for m in measurements:
-                        rows.append({
-                            "stage": m.get("label", m.get("note", "unknown")),
-                            "energy_joules": m.get("total_energy_J", m.get("energy_value", m.get("cpu_energy_J", 0.0))),
-                            "duration_seconds": m.get("duration", m.get("total_time", 0.0)),
-                            "timestamp": m.get("time", m.get("timestamp", "")),
-                        })
+            labels = dict(re.findall(r"ECO_CI_MEASUREMENT_(\d+)_LABEL='([^']*)'", text))
+            energies = dict(re.findall(r"ECO_CI_MEASUREMENT_(\d+)_ENERGY='([^']*)'", text))
+            times = dict(re.findall(r"ECO_CI_MEASUREMENT_(\d+)_TIME='([^']*)'", text))
+
+            for n in sorted(labels, key=int):
+                rows.append({
+                    "stage": labels[n],
+                    "energy_joules": float(energies.get(n, 0.0)),
+                    "duration_seconds": float(times.get(n, 0.0)),
+                    "timestamp": "",
+                })
     except zipfile.BadZipFile:
         print(f"  WARNING: Artifact '{artifact_name}' is not a valid zip file.")
-    except json.JSONDecodeError as e:
-        print(f"  WARNING: JSON parse error in artifact '{artifact_name}': {e}")
     return rows
 
 
