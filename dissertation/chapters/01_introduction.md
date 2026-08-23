@@ -18,6 +18,8 @@ Within this broader cloud infrastructure footprint, Continuous Integration and C
 
 At ecosystem scale, Saavedra, Mendes and Ferreira (2025) estimate the carbon footprint of the entire GitHub Actions ecosystem in 2024 at between 150.5 and 994.9 metric tonnes of CO₂ equivalent (MTCO₂e), with a most likely scenario of 456.9 MTCO₂e. This is the equivalent of the annual electricity consumption of thousands of homes, produced by automated pipelines that most developers have never audited for environmental efficiency.
 
+Taken together, these figures establish that CI/CD is not a peripheral cost of software delivery but a growing and largely invisible line item in the environmental footprint of the software industry, one that scales directly with how often, and how wastefully, pipelines are triggered. That framing motivates the next question: not whether CI/CD carries an energy cost, but why that cost is so much higher than the work being performed requires.
+
 ### 1.2.2 Systemic Inefficiency in CI/CD Configuration
 
 The energy cost of CI/CD pipelines is not primarily a consequence of the work performed (tests must run, code must be compiled) but of how pipelines are configured to perform that work. Three patterns account for much of the excess consumption:
@@ -30,6 +32,8 @@ The energy cost of CI/CD pipelines is not primarily a consequence of the work pe
 
 These patterns are not the product of deliberate decisions to consume energy; they reflect engineering choices made without visibility into their environmental consequences. Pinto and Castor (2017) observe that energy efficiency has historically been treated as a concern for embedded or high-performance computing, not for the typical application developer. Engineers who routinely optimise query latency and memory footprint have no equivalent instinct or toolchain for measuring what a git push costs the planet.
 
+In summary, the three patterns identified here, unconditional reinstallation, fragmented workflows, and unrestricted triggers, are the practical target of this dissertation's three refinement strategies. Each maps directly onto one of the four experimental configurations introduced in Chapter 3: dependency caching addresses the first pattern, workflow consolidation the second, and path-based filtering the third, with a fourth configuration combining all three.
+
 ### 1.2.3 The Measurement and Regulatory Gap
 
 Three developments make the measurement of CI/CD carbon impact both feasible and timely.
@@ -41,6 +45,12 @@ Second, the Eco-CI Energy Estimation tool (Green Coding Solutions, 2023) makes e
 Third, the EU Corporate Sustainability Reporting Directive (CSRD), effective from January 2024, requires large organisations to disclose Scope 3 emissions, a category that includes cloud infrastructure usage (European Commission, 2022). As sustainability reporting obligations mature, the energy cost of CI/CD pipelines will increasingly appear in corporate carbon accounts. This regulatory pressure creates organisational incentives for pipeline efficiency that complement the environmental motivation.
 
 Despite these developments, a critical gap remains. No existing study has experimentally applied and compared multiple CI/CD pipeline refinement strategies across diverse real-world projects using standardised carbon measurement. Saavedra et al. (2025) estimate ecosystem-scale footprints but provide no project-level guidance. Bouzenia and Pradel (2024) document optimisation adoption rates and estimate VM time savings, but do not translate these into carbon units. Claßen et al. (2023) demonstrate carbon-aware temporal scheduling but do not evaluate pipeline configuration changes. Alamer and Alharbi (2025) systematically review the literature and identify the absence of empirical comparative data as the primary gap. That is the gap this dissertation fills.
+
+In summary, the standard, the tool, and the regulatory pressure now each exist independently. What has not yet existed is a study that puts all three together to test, in a controlled way, which specific pipeline changes are actually worth making, and by how much.
+
+### 1.2.4 Problem Statement
+
+The result is a persistent gap between what is now measurable and what is actually known. Pipelines continue to reinstall dependencies, run fragmented workflows, and trigger on irrelevant changes (Section 1.2.2), not because these inefficiencies are unknown in principle, but because no study has quantified their carbon cost in a way a maintainer can act on. The instruments needed to close this gap exist (Section 1.2.3), yet nobody has applied them systematically, across more than one project and more than one strategy, using a standardised metric that permits genuine comparison. The problem this dissertation addresses is therefore concrete: open-source maintainers who want to reduce the carbon footprint of their CI/CD pipelines currently have no evidence-based way to decide which of several plausible configuration changes is worth making first, or whether that decision even holds outside the specific project where a saving happens to have been observed.
 
 ---
 
@@ -56,6 +66,26 @@ This dissertation is organised around three research questions, each designed to
 
 RQ1 establishes whether individual strategies produce measurable, statistically significant carbon reductions. RQ2 tests whether findings from one project type (e.g., a small Python library) generalise to others (e.g., a large Java application). RQ3 synthesises the comparative evidence into actionable recommendations, accounting for both the magnitude of carbon saving and the implementation cost of each strategy.
 
+### 1.3.1 Objectives
+
+To answer the research questions above, this dissertation pursues the following objectives:
+
+- Instrument four progressively refined GitHub Actions pipeline configurations, baseline, caching, consolidation, and combined, with the Eco-CI energy estimation tool across a set of real open-source projects.
+- Convert the measured energy consumption of each configuration into a standardised carbon figure using the Software Carbon Intensity (SCI) specification (ISO/IEC 21031:2024).
+- Statistically compare each refinement strategy against the unrefined baseline to establish which produce a measurable and significant carbon reduction (addressing RQ1).
+- Assess whether the magnitude and direction of each strategy's effect holds across projects of different programming languages and sizes (addressing RQ2).
+- Rank the three strategies by carbon saved per unit of implementation effort and translate that ranking into evidence-based recommendations for maintainers (addressing RQ3).
+
+### 1.3.2 Main Contributions
+
+This dissertation is expected to make the following contributions, confirmed in full once the complete dataset is analysed (Chapter 7):
+
+1. The first multi-strategy, cross-project empirical comparison of CI/CD pipeline refinement strategies under a standardised carbon metric (SCI / ISO/IEC 21031:2024).
+2. A replicable green CI/CD audit methodology, comprising an Eco-CI instrumentation pattern, a pre-study audit checklist, data-collection scripts, and analysis notebooks, published as an open replication package.
+3. A cross-language experimental design that isolates language and ecosystem effects from application purpose by holding the HTTP-client domain constant across the projects studied.
+4. Evidence-based, effort-weighted recommendations for open-source maintainers on which pipeline configuration change is worth making first.
+5. A multi-region SCI analysis quantifying the carbon impact of runner geographic location relative to configuration-level optimisation.
+
 ---
 
 ## 1.4 Scope and Limitations
@@ -68,15 +98,11 @@ The scope is bounded to the three refinement strategies identified from the lite
 
 ## 1.5 Report Outline
 
-**Chapter 2 (Literature Review)** surveys the existing body of research across four thematic areas: ecosystem-scale CI/CD energy measurement; energy profiling of individual CI stages; carbon-aware scheduling approaches; and measurement tools and standards. A gap analysis identifies the specific contribution this dissertation makes relative to prior work.
-
-**Chapter 3 (Methodology)** describes the research design in detail: project selection criteria and the rationale for the chosen projects; the four experimental configurations (baseline, caching, consolidation, combined); the Eco-CI instrumentation pattern; the data collection procedure; and the statistical analysis approach including Wilcoxon signed-rank tests, Bonferroni correction, and Cliff's delta effect sizes.
-
-**Chapter 4 (Results)** presents the energy and carbon measurements for each project and configuration. Descriptive statistics, significance tests, and SCI scores are reported, together with the multi-region carbon intensity analysis.
-
-**Chapter 5 (Discussion)** interprets the findings in relation to the three research questions, compares results to prior literature, and identifies the principal threats to validity: construct, internal, external, and conclusion validity.
-
-**Chapter 6 (Conclusion)** summarises the contributions of the dissertation, states the practical recommendations for open-source maintainers, acknowledges the limitations of the study, and identifies directions for future work.
+- **Chapter 2 (Literature Review)** surveys the existing body of research across four thematic areas: ecosystem-scale CI/CD energy measurement; energy profiling of individual CI stages; carbon-aware scheduling approaches; and measurement tools and standards. A gap analysis identifies the specific contribution this dissertation makes relative to prior work.
+- **Chapter 3 (Methodology)** describes the research design and the reasoning behind it: the rationale for a controlled, within-subjects experiment; project selection criteria; the four experimental configurations at a conceptual level; the SCI carbon-calculation framework; the data collection procedure; and the ethical and reproducibility considerations.
+- **Chapter 4 (Design)** presents the concrete technical implementation that realises the methodology: the pipeline architecture for each configuration, the Eco-CI instrumentation pipeline, the measurement stage boundaries, and a worked example of the SCI calculation, illustrated with diagrams.
+- **Chapter 5 (Results)** sets out the statistical analysis approach, then presents the energy and carbon measurements for each project and configuration: descriptive statistics, significance tests, SCI scores, and the multi-region carbon intensity analysis.
+- **Chapter 6 (Discussion)** interprets the findings in relation to the three research questions, compares results to prior literature, and identifies the principal threats to validity: construct, internal, external, and conclusion validity.
+- **Chapter 7 (Conclusion)** confirms the contributions of the dissertation, states the practical recommendations for open-source maintainers, acknowledges the limitations of the study, and identifies directions for future work.
 
 ---
-

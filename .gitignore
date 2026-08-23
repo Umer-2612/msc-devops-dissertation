@@ -25,3 +25,8 @@ experiments/project-01-httpie-cli/ieee_paper_draft.md
 # Editor
 .vscode/
 .idea/
+
+# Secrets — never commit tokens
+.env
+*.env
+experiments/.env

@@ -35,15 +35,16 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 
 | Chapter | Title | Status | Word Count (target) |
 |---|---|---|---|
-| 1 | Introduction | Draft written | ~1,700 |
-| 2 | Literature Review | Outline + 2 sections written | ~3,500 |
-| 3 | Methodology | Outline written | ~2,500 |
-| 4 | Results | Pilot data written; full data collection in progress | ~3,000 |
-| 5 | Discussion | Outline + structure written | ~2,500 |
-| 6 | Conclusion | Outline written | ~1,000 |
+| 1 | Introduction | Expanded: problem statement, objectives, contributions preview | ~2,200 |
+| 2 | Literature Review | Expanded: title+one-liner per paper, gap analysis widened, key takeaway added | ~4,500 |
+| 3 | Methodology | Trimmed to research rationale + design; implementation detail moved to Ch4 | ~2,000 |
+| 4 | Design | New: pipeline architecture, instrumentation, measurement stages, worked example, diagrams | ~2,000 |
+| 5 | Results | Statistical approach + pilot data written; full 30-run data collection pending | ~3,000 |
+| 6 | Discussion | Structure written, renumbered from Ch5 | ~2,500 |
+| 7 | Conclusion | Structure written, contributions cross-referenced to Ch1 | ~1,200 |
 | n/a | Abstract | Not started (write last) | max 250 words |
 
-**Target total:** ~15,000 words
+**Target total:** ~17,500 words
 
 ---
 

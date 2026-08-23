@@ -44,6 +44,8 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 ## G
 
+**got** (Sorhus, S., 2024) *got: Human-Friendly and Powerful HTTP Request Library for Node.js*. Open-source software, JavaScript/TypeScript cross-language parallel project (Section 3.2.3). Available at: https://github.com/sindresorhus/got [Accessed 12 July 2026].
+
 **Green Coding Solutions** (2023) *Eco-CI Energy Estimation*, Version 5.3.0. Open-source tool. Available at: https://github.com/green-coding-solutions/eco-ci-energy-estimation [Accessed 12 July 2026].
 
 **Green Software Foundation** (2024) *Software Carbon Intensity (SCI) Specification*, v1.0. Adopted as ISO/IEC 21031:2024. Available at: https://sci-guide.greensoftware.foundation [Accessed 15 June 2026].
@@ -53,6 +55,8 @@ Online sources constitute less than 50% of the total reference list, in accordan
 ## H
 
 **Hilton, M., Tunnell, T., Huang, K., Marinov, D. and Dig, D.** (2016) 'Usage, Costs, and Benefits of Continuous Integration in Open-Source Projects', in *Proceedings of the 31st IEEE/ACM International Conference on Automated Software Engineering (ASE 2016)*, Singapore, September 2016, pp. 426–437. DOI: 10.1145/2970276.2970358.
+
+**HTTPie** (2024) *HTTPie CLI*, Version 3.2.4. Open-source software, subject project for the anchor arm of this study (Section 3.2.4). Available at: https://github.com/httpie/cli [Accessed 12 July 2026].
 
 ---
 
@@ -94,6 +98,10 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 ## R
 
+**resty** (Reddy, J., 2024) *resty: Simple HTTP and REST Client Library for Go*. Open-source software, Go cross-language parallel project (Section 3.2.3). Available at: https://github.com/go-resty/resty [Accessed 12 July 2026].
+
+**Retrofit** (Square, Inc., 2024) *Retrofit: A Type-Safe HTTP Client for Android and Java*. Open-source software, Java cross-language parallel project (Section 3.2.3). Available at: https://github.com/square/retrofit [Accessed 12 July 2026].
+
 **Romano, J., Kromrey, J.D., Coraggio, J. and Skowronek, J.** (2006) 'Appropriate Statistics for Ordinal Level Data: Should We Really Be Using t-Test and Cohen's d for Evaluating Group Differences on the NSSE and Other Surveys?', in *Florida Association of Institutional Research Annual Meeting*, 2006.
 
 ---
@@ -114,12 +122,13 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 | Type | Count | % |
 |---|---|---|
-| Peer-reviewed journal articles | 4 | 24% |
-| Peer-reviewed conference papers | 8 | 47% |
-| Standards (ISO/IEC, GSF) | 2 | 12% |
-| Regulatory documents (EU) | 1 | 6% |
-| Open-access preprints (under review) | 2 | 12% |
-| Online-only / blog | 1 | 6% |
-| **Total** | **18** | |
+| Peer-reviewed journal articles | 4 | 17% |
+| Peer-reviewed conference papers | 8 | 35% |
+| Standards (ISO/IEC, GSF) | 2 | 9% |
+| Regulatory documents (EU) | 1 | 4% |
+| Open-access preprints (under review) | 2 | 9% |
+| Online-only / blog | 1 | 4% |
+| Open-source software (subject projects and tooling) | 5 | 22% |
+| **Total** | **23** | |
 
-Online-only sources (blog + tool GitHub repos): ~12–18% — within the 50% ATU guideline.
+Online-only sources (blog + subject-project and tool repositories): 6 of 23 (~26%) — within the 50% ATU guideline. The five software citations (HTTPie, got, Retrofit, resty, and Eco-CI) are repositories rather than peer-reviewed literature, cited because they are the direct objects of study or instrumentation (Sections 3.2.3, 3.4), not as evidentiary sources for claims.

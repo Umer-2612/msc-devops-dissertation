@@ -33,18 +33,19 @@ msc-devops-dissertation/
 
 ---
 
-## Current Status (July 2026, Week 2)
+## Current Status (August 2026)
 
 | Area | Progress |
 |---|---|
-| Literature review | 9 papers reviewed + 3 new 2026 papers found |
-| Chapter 1: Introduction | Complete draft |
-| Chapter 2: Literature Review | Sections 2.1–2.5 written |
-| Chapter 3: Methodology | Full outline written |
-| First project (HTTPie CLI) | 4 branches set up, pilot data collected |
-| Full 30-run data collection | In progress |
+| Literature review | 9 papers reviewed + 3 new 2026 papers found; expanded per-paper depth and gap analysis (Chapter 2) |
+| Chapter 1: Introduction | Expanded: problem statement, objectives, contributions preview |
+| Chapter 2: Literature Review | Sections 2.1–2.7 written |
+| Chapter 3: Methodology | Trimmed to research rationale and design; implementation detail moved to Chapter 4 |
+| Chapter 4: Design | New chapter: pipeline architecture, instrumentation pipeline, worked example, diagrams |
+| First project (HTTPie CLI) | Workflows instrumented; pilot instrumentation data collected during testing |
+| Full 30-run data collection | Not yet started — see `experiments/project-01-httpie-cli/RESEARCH_LOG.md` |
 
-**Pilot finding:** Caching + consolidation reduces test matrix energy by 7.1% (1,484 J → 1,378 J). Dependency installation stage alone: −16.8%.
+**Pilot finding (illustrative, from early instrumentation testing, not the validated 30-run protocol):** Caching + consolidation reduces test matrix energy by 7.1% (1,484 J → 1,378 J). Dependency installation stage alone: −16.8%.
 
 ---
 
@@ -66,11 +67,12 @@ https://github.com/Umer-2612/httpie-cli-carbon-study
 
 | File | What it contains |
 |---|---|
-| `dissertation/chapters/01_introduction.md` | Complete introduction chapter |
-| `dissertation/chapters/02_literature_review.md` | Literature review (sections 2.1–2.6) |
-| `dissertation/chapters/03_methodology.md` | Methodology chapter |
-| `dissertation/chapters/04_results.md` | Results chapter with pilot data |
-| `dissertation/references/bibliography.md` | All 18 references in Harvard format |
+| `dissertation/chapters/01_introduction.md` | Introduction: purpose, background, problem statement, research questions, objectives, contributions preview |
+| `dissertation/chapters/02_literature_review.md` | Literature review (sections 2.1–2.7), expanded per-paper depth and gap analysis |
+| `dissertation/chapters/03_methodology.md` | Methodology: research rationale, project selection, configurations, SCI framework |
+| `dissertation/chapters/04_design.md` | Design: pipeline architecture, instrumentation pipeline, measurement stages, worked example, diagrams |
+| `dissertation/chapters/05_results.md` | Results chapter with statistical approach and pilot data |
+| `dissertation/references/bibliography.md` | All references in Harvard format, including subject-project citations |
 | `experiments/project-01-httpie-cli/README.md` | Project summary, pilot results, how to run |
 | `experiments/project-01-httpie-cli/RESEARCH_LOG.md` | Audit log: decisions and findings |
 | `notes/weekly_log.md` | Week-by-week progress log |

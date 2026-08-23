@@ -2,6 +2,8 @@
 # Project 01: HTTPie CLI
 # Config C1 (baseline): Coverage - no caching, no consolidation
 # Checks out httpie/cli@3.2.4 externally; no modifications to the source.
+# PYTEST_ADDOPTS deselects two tests that fail against modern charset_normalizer
+# releases (big5 detection changed upstream since 3.2.4 was tagged); see Appendix A.
 # ============================================================
 name: P01 HTTPie C1 Coverage
 
@@ -54,6 +56,8 @@ jobs:
 
       - name: Run tests with coverage
         run: make test-cover
+        env:
+          PYTEST_ADDOPTS: "-k 'not big5'"
 
       - name: Eco-CI coverage measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5

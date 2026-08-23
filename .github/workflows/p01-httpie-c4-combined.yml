@@ -6,6 +6,8 @@
 # Compared to C3: adds cache: pip on all setup-python steps.
 # (Path-based trigger filters are omitted because all runs are manual
 # workflow_dispatch against a fixed external ref, so they don't apply.)
+# PYTEST_ADDOPTS deselects two tests that fail against modern charset_normalizer
+# releases (big5 detection changed upstream since 3.2.4 was tagged); see Appendix A.
 # ============================================================
 name: P01 HTTPie C4 Combined
 
@@ -136,6 +138,8 @@ jobs:
 
       - name: Run tests
         run: make test
+        env:
+          PYTEST_ADDOPTS: "-k 'not big5'"
 
       - name: Eco-CI test-execution measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5
@@ -203,6 +207,8 @@ jobs:
 
       - name: Run tests with coverage
         run: make test-cover
+        env:
+          PYTEST_ADDOPTS: "-k 'not big5'"
 
       - name: Eco-CI coverage measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5
