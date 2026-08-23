@@ -768,7 +768,7 @@ Several extensions follow directly from this work: completing the full 30-run st
 
 **resty** (Reddy, J.) (2024) *resty: Simple HTTP and REST Client Library for Go*. Open-source software. Available at: https://github.com/go-resty/resty.
 
-**Retrofit** (Square, Inc.) (2024) *Retrofit: A Type-Safe HTTP Client for Android and Java*. Open-source software. Available at: https://github.com/square/retrofit.
+**Retrofit** (2026) *Retrofit: A Type-Safe HTTP Client for Android and the JVM*. Open-source software. Available at: https://github.com/lysine-dev/retrofit.
 
 **Romano, J., Kromrey, J.D., Coraggio, J. and Skowronek, J.** (2006) 'Appropriate Statistics for Ordinal Level Data', in *Florida Association of Institutional Research Annual Meeting*, 2006.
 

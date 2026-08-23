@@ -2,6 +2,13 @@
 # Project 02: got (JavaScript/TypeScript HTTP client)
 # Config C2 (caching): npm caching enabled, same single workflow as C1
 # Checks out sindresorhus/got@v15.1.0 externally; no modifications to the source.
+#
+# got does not commit a package-lock.json (common for npm libraries rather
+# than applications), so setup-node's built-in `cache: npm` cannot resolve a
+# lockfile to key against. Caching is instead implemented manually via
+# actions/cache on npm's own download cache directory (~/.npm), keyed on
+# package.json's hash, which still avoids re-downloading packages from the
+# registry on a cache hit.
 # ============================================================
 name: P02 got C2 Tests
 
@@ -48,7 +55,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+
+      - name: Cache npm packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-got-${{ matrix.node-version }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-got-${{ matrix.node-version }}-
 
       - name: Install dependencies
         run: npm install

@@ -10,6 +10,9 @@
 # dissertation edits), not just got-relevant changes. All research runs are
 # triggered manually via workflow_dispatch against a fixed external ref, so
 # this construct-validity limitation is unaffected either way (Section 3.3).
+#
+# got does not commit a package-lock.json, so caching is implemented via
+# actions/cache on ~/.npm rather than setup-node's built-in cache (see C2).
 # ============================================================
 name: P02 got C4 Combined
 
@@ -56,7 +59,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+
+      - name: Cache npm packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-got-${{ matrix.node-version }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-got-${{ matrix.node-version }}-
 
       - name: Install dependencies
         run: npm install

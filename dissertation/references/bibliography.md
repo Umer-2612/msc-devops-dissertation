@@ -100,7 +100,7 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 **resty** (Reddy, J., 2024) *resty: Simple HTTP and REST Client Library for Go*. Open-source software, Go cross-language parallel project (Section 3.2.3). Available at: https://github.com/go-resty/resty [Accessed 12 July 2026].
 
-**Retrofit** (Square, Inc., 2024) *Retrofit: A Type-Safe HTTP Client for Android and Java*. Open-source software, Java cross-language parallel project (Section 3.2.3). Available at: https://github.com/square/retrofit [Accessed 12 July 2026].
+**Retrofit** (2026) *Retrofit: A Type-Safe HTTP Client for Android and the JVM*. Open-source software, Java cross-language parallel project (Section 3.2.3). Available at: https://github.com/lysine-dev/retrofit [Accessed 23 August 2026].
 
 **Romano, J., Kromrey, J.D., Coraggio, J. and Skowronek, J.** (2006) 'Appropriate Statistics for Ordinal Level Data: Should We Really Be Using t-Test and Cohen's d for Evaluating Group Differences on the NSSE and Other Surveys?', in *Florida Association of Institutional Research Annual Meeting*, 2006.
 
