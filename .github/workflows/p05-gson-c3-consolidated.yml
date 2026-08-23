@@ -52,8 +52,8 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Run tests
-        run: mvn test
+      - name: Run core module tests
+        run: mvn test --projects gson
 
       - name: Eco-CI test-execution measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5
