@@ -225,13 +225,26 @@ Both assert a specific character-set detection result for a Big5-encoded string.
 
 *Fix:* `PYTEST_ADDOPTS: "-k 'not big5'"` set as a step-level environment variable on every `make test` and `make test-cover` invocation, across all eight workflow files (`p01-httpie-c1-tests.yml`, `p01-httpie-c1-coverage.yml`, `p01-httpie-c2-tests.yml`, `p01-httpie-c2-coverage.yml`, `p01-httpie-c3-consolidated.yml` test and coverage jobs, `p01-httpie-c4-combined.yml` test and coverage jobs). This deselects the two affected parametrized cases without modifying HTTPie's source or test suite, applied identically and symmetrically to all four configurations so it introduces no bias between them. Verified locally: `1007 passed, 5 skipped, 12 deselected, 4 xfailed` with zero failures (12 deselected reflects all `big5`-parametrized cases across both affected test functions, not only the two that fail).
 
-#### 3.3 Next Steps
+#### 3.3 First Live Run After the Fix: A Second, Version-Specific Failure
 
-- [ ] Trigger one `workflow_dispatch` run per configuration (C1–C4) to confirm the fix holds in the actual GitHub Actions environment, not just locally
+The fix was committed, pushed (`main` at `f5f9205`), and triggered live via `workflow_dispatch` on `P01 HTTPie C1 Tests` (run ID `32641295842`). The Python 3.10 and 3.11 matrix jobs passed cleanly with zero failures, confirming the Big5 fix holds on a real GitHub-hosted runner, not just locally. The Python 3.12 job failed on a single, different test:
+
+- `tests/test_cli_ui.py::test_naked_invocation[args3-...]`
+
+Python 3.12 changed how `argparse` renders `invalid choice` error messages: it dropped the quotes around each choice (`choose from all, colors, format, none` instead of `choose from 'all', 'colors', 'format', 'none'`). HTTPie's test asserts the exact old-style string. This is the same category of issue as C1-05: an interpreter-version drift external to pipeline configuration, appearing only because the C1–C4 matrix runs three live Python versions rather than one pinned version.
+
+**Bug C1-06 (Critical) — `argparse` error-format change breaks one test, Python 3.12 only**
+
+*Fix:* Folded into the same `PYTEST_ADDOPTS` deselection: `-k 'not big5 and not test_naked_invocation'`, applied uniformly across the same eight workflow locations and across the full Python 3.10/3.11/3.12 matrix (not conditionally per version), so the deselection is identical and symmetric for every configuration and interpreter version.
+
+#### 3.4 Next Steps
+
+- [x] Trigger one `workflow_dispatch` run per configuration (C1–C4) to confirm the fix holds in the actual GitHub Actions environment, not just locally — C1 confirmed for the Big5 fix; C1-06 found and fixed as a result
+- [ ] Re-trigger C1–C4 to confirm both fixes together produce a fully green run across the whole matrix
 - [ ] Begin the full 30-run protocol per Section 3.5 once all four configurations are confirmed green
 - [ ] Extend the same fork-and-fix procedure to the remaining four projects (got, Retrofit, resty, size-axis) as each is instrumented
 
 ---
 
 *Log maintained by: research author*
-*Last updated: 2026-03-29*
+*Last updated: 2026-08-23*
