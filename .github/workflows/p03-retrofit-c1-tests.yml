@@ -12,6 +12,14 @@
 #
 # As with got (Section 3.2.5), Retrofit's `jvm` job is a single self-contained
 # unit with nothing to consolidate, so C1 and C3 are structurally identical.
+#
+# The measured command is further narrowed from the project's own `./gradlew
+# build` to `./gradlew :retrofit:test`: `build` also exercises the
+# `java-test` submodule's per-JDK-version compatibility suite (testJdk10,
+# testJdk11, ...), which failed intermittently on a toolchain-provisioning
+# issue unrelated to caching or consolidation. Measuring only the core
+# library's own test task avoids that unrelated noise, mirroring the
+# `make test`-not-`make test-all` scoping already applied to HTTPie.
 # ============================================================
 name: P03 Retrofit C1 Tests
 
@@ -57,8 +65,8 @@ jobs:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Run core module tests
+        run: ./gradlew :retrofit:test
 
       - name: Eco-CI test-execution measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5

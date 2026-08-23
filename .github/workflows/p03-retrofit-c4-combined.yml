@@ -54,8 +54,8 @@ jobs:
           java-version-file: .github/workflows/.java-version
           cache: gradle
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Run core module tests
+        run: ./gradlew :retrofit:test
 
       - name: Eco-CI test-execution measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5
