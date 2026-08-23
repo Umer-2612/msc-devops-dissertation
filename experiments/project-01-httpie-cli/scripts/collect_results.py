@@ -5,19 +5,26 @@ collect_results.py
 Downloads Eco-CI JSON energy measurement artifacts from GitHub Actions
 and consolidates them into a single CSV file for statistical analysis.
 
+Workflow files across all projects live on a single `main` branch in this
+repository, with the project and configuration encoded in the filename:
+    p{NN}-{project}-c{1-4}-{type}.yml
+e.g. p01-httpie-c1-tests.yml, p02-got-c2-tests.yml, p03-retrofit-c4-combined.yml
+
 Usage:
     export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
-    export GITHUB_REPO=your-username/httpie-cli-carbon-study   # e.g. jdoe/httpie-cli-carbon-study
+    export GITHUB_REPO=Umer-2612/msc-devops-dissertation
     python scripts/collect_results.py
 
 Output:
-    results/raw_data.csv — columns: run_id, config, stage, energy_joules,
-                                     duration_seconds, timestamp, workflow, python_version
+    results/raw_data.csv — columns: run_id, project, config, stage,
+                                     energy_joules, duration_seconds,
+                                     timestamp, workflow, python_version
 """
 
 import csv
 import json
 import os
+import re
 import sys
 import time
 import zipfile
@@ -32,30 +39,17 @@ import requests
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO")
 
-# Map workflow file names → experiment config labels
-WORKFLOW_CONFIG_MAP = {
-    "tests.yml": "C1",
-    "code-style.yml": "C1",
-    "coverage.yml": "C1",
-    "ci-consolidated.yml": "C3",   # override per branch below
-}
-
-# Map branch name prefixes → config labels (takes precedence over workflow map)
-BRANCH_CONFIG_MAP = {
-    "experiment/c1-baseline": "C1",
-    "experiment/c2-pip-cache": "C2",
-    "experiment/c3-consolidation": "C3",
-    "experiment/c4-combined": "C4",
-}
+# Matches workflow filenames like p01-httpie-c1-tests.yml -> project="httpie", config="C1"
+WORKFLOW_FILENAME_RE = re.compile(r"^p\d+-(?P<project>[a-z0-9]+)-c(?P<config>[1-4])-")
 
 OUTPUT_CSV = Path("results/raw_data.csv")
 OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
 
 CSV_COLUMNS = [
     "run_id",
+    "project",
     "config",
     "workflow",
-    "branch",
     "stage",
     "energy_joules",
     "duration_seconds",
@@ -118,7 +112,7 @@ def paginate(url: str, key: str, params: dict = None) -> list:
 def list_workflow_runs() -> list[dict]:
     """Fetch all completed workflow runs for the repository."""
     url = f"https://api.github.com/repos/{GITHUB_REPO}/actions/runs"
-    runs = paginate(url, "workflow_runs", {"status": "completed"})
+    runs = paginate(url, "workflow_runs", {"status": "completed", "branch": "main"})
     print(f"Found {len(runs)} completed workflow runs.")
     return runs
 
@@ -131,12 +125,31 @@ def list_artifacts(run_id: int) -> list[dict]:
 
 
 def download_artifact(artifact: dict) -> bytes | None:
-    """Download artifact zip and return raw bytes."""
+    """
+    Download artifact zip and return raw bytes.
+
+    GitHub's artifact download endpoint responds with a 302 redirect to a
+    SAS-signed Azure Blob Storage URL. That URL authenticates via its own
+    signed query parameters and rejects requests that also carry a GitHub
+    Authorization header, so the redirect must be followed manually with a
+    fresh, unauthenticated request rather than via requests' automatic
+    redirect-following (which forwards the original headers).
+    """
     download_url = artifact.get("archive_download_url")
     if not download_url:
         return None
     headers = get_headers()
-    resp = requests.get(download_url, headers=headers, timeout=60, allow_redirects=True)
+    resp = requests.get(download_url, headers=headers, timeout=60, allow_redirects=False)
+    if resp.status_code in (301, 302, 303, 307, 308):
+        blob_url = resp.headers.get("Location")
+        if not blob_url:
+            print(f"  WARNING: Redirect response for '{artifact['name']}' had no Location header.")
+            return None
+        blob_resp = requests.get(blob_url, timeout=60)
+        if blob_resp.status_code == 200:
+            return blob_resp.content
+        print(f"  WARNING: Could not download artifact {artifact['name']} from blob storage — HTTP {blob_resp.status_code}")
+        return None
     if resp.status_code == 200:
         return resp.content
     print(f"  WARNING: Could not download artifact {artifact['name']} — HTTP {resp.status_code}")
@@ -147,14 +160,9 @@ def parse_eco_ci_json(raw_bytes: bytes, artifact_name: str) -> list[dict]:
     """
     Extract measurement entries from an Eco-CI artifacts zip.
     Eco-CI writes an 'eco-ci-results.json' file (array of measurement objects).
-    Each entry looks like:
-      {
-        "label": "dependency-installation",
-        "cpu_energy_J": 1.234,
-        "total_energy_J": 1.567,
-        "duration": 42.1,
-        "time": "2024-01-01T12:00:00Z"
-      }
+    Field names are matched defensively since Eco-CI's exact schema has
+    varied across releases; verify against a real downloaded artifact
+    before relying on this for the final dataset.
     """
     rows = []
     try:
@@ -166,20 +174,19 @@ def parse_eco_ci_json(raw_bytes: bytes, artifact_name: str) -> list[dict]:
             for fname in json_files:
                 with zf.open(fname) as f:
                     data = json.load(f)
-                    # Eco-CI may produce a list or a dict with "measurements"
                     if isinstance(data, list):
                         measurements = data
                     elif isinstance(data, dict):
-                        measurements = data.get("measurements", [data])
+                        measurements = data.get("measurements", data.get("data", [data]))
                     else:
                         continue
 
                     for m in measurements:
                         rows.append({
-                            "stage": m.get("label", "unknown"),
-                            "energy_joules": m.get("total_energy_J", m.get("cpu_energy_J", 0.0)),
-                            "duration_seconds": m.get("duration", 0.0),
-                            "timestamp": m.get("time", ""),
+                            "stage": m.get("label", m.get("note", "unknown")),
+                            "energy_joules": m.get("total_energy_J", m.get("energy_value", m.get("cpu_energy_J", 0.0))),
+                            "duration_seconds": m.get("duration", m.get("total_time", 0.0)),
+                            "timestamp": m.get("time", m.get("timestamp", "")),
                         })
     except zipfile.BadZipFile:
         print(f"  WARNING: Artifact '{artifact_name}' is not a valid zip file.")
@@ -188,20 +195,20 @@ def parse_eco_ci_json(raw_bytes: bytes, artifact_name: str) -> list[dict]:
     return rows
 
 
-def infer_config(run: dict) -> str:
-    """Determine config label (C1–C4) from branch name, falling back to workflow name."""
-    branch = run.get("head_branch", "")
-    for prefix, label in BRANCH_CONFIG_MAP.items():
-        if branch == prefix or branch.startswith(prefix):
-            return label
+def infer_project_and_config(run: dict) -> tuple[str, str]:
+    """Determine (project, config) from the workflow file path, e.g.
+    '.github/workflows/p02-got-c2-tests.yml' -> ('got', 'C2')."""
     workflow_file = run.get("path", "").split("/")[-1]
-    return WORKFLOW_CONFIG_MAP.get(workflow_file, "unknown")
+    m = WORKFLOW_FILENAME_RE.match(workflow_file)
+    if m:
+        return m.group("project"), f"C{m.group('config')}"
+    return "unknown", "unknown"
 
 
 def infer_python_version(artifact_name: str) -> str:
-    """Extract Python version from artifact name (e.g. 'eco-ci-results-tests-py3.11-ubuntu-latest')."""
+    """Extract Python version from artifact name (e.g. 'eco-ci-p01-c1-tests-py3.11')."""
     for part in artifact_name.split("-"):
-        if part.startswith("py"):
+        if part.startswith("py") and len(part) > 2 and part[2].isdigit():
             return part[2:]
     return ""
 
@@ -218,11 +225,10 @@ def main():
 
     for run in runs:
         run_id = run["id"]
-        branch = run.get("head_branch", "unknown")
         workflow_name = run.get("name", "unknown")
-        config = infer_config(run)
+        project, config = infer_project_and_config(run)
 
-        print(f"  Run #{run_id} | branch={branch} | config={config} | workflow={workflow_name}")
+        print(f"  Run #{run_id} | project={project} | config={config} | workflow={workflow_name}")
 
         artifacts = list_artifacts(run_id)
         eco_artifacts = [a for a in artifacts if "eco-ci" in a["name"].lower()]
@@ -243,9 +249,9 @@ def main():
             for row in rows:
                 all_rows.append({
                     "run_id": run_id,
+                    "project": project,
                     "config": config,
                     "workflow": workflow_name,
-                    "branch": branch,
                     "stage": row["stage"],
                     "energy_joules": row["energy_joules"],
                     "duration_seconds": row["duration_seconds"],
