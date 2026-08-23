@@ -10,12 +10,17 @@
 
 ## Experiment Configuration Overview
 
-| Config | Branch | Description |
+All four configurations live as workflow files on `main` in this single
+repository (`.github/workflows/p01-httpie-c{1-4}-*.yml`), checking out
+`httpie/cli@3.2.4` externally. There is no separate fork and no per-config
+branch; the config is encoded in the filename.
+
+| Config | Workflow files | Description |
 |--------|--------|-------------|
-| **C1** | `experiment/c1-baseline` | 3 separate workflow files (tests, code-style, coverage) + Eco-CI; no caching |
-| **C2** | `experiment/c2-pip-cache` | Same 3 workflows + `cache: pip` on all `setup-python` steps |
-| **C3** | `experiment/c3-consolidation` | All 3 stages merged into single `ci-consolidated.yml`; no caching |
-| **C4** | `experiment/c4-combined` | C3 + `cache: pip` + path-based trigger filters |
+| **C1** | `p01-httpie-c1-tests.yml`, `-c1-code-style.yml`, `-c1-coverage.yml` | 3 separate workflow files + Eco-CI; no caching |
+| **C2** | `p01-httpie-c2-tests.yml`, `-c2-code-style.yml`, `-c2-coverage.yml` | Same 3 workflows + `cache: pip` on all `setup-python` steps |
+| **C3** | `p01-httpie-c3-consolidated.yml` | All 3 stages merged into a single workflow; no caching |
+| **C4** | `p01-httpie-c4-combined.yml` | C3's structure + `cache: pip` |
 
 Each configuration targets 30 repeated `workflow_dispatch` runs for statistical adequacy (Wilcoxon requires n ≥ 6; 30 runs provides >95% power for medium effect sizes at α = 0.017).
 
@@ -237,11 +242,23 @@ Python 3.12 changed how `argparse` renders `invalid choice` error messages: it d
 
 *Fix:* Folded into the same `PYTEST_ADDOPTS` deselection: `-k 'not big5 and not test_naked_invocation'`, applied uniformly across the same eight workflow locations and across the full Python 3.10/3.11/3.12 matrix (not conditionally per version), so the deselection is identical and symmetric for every configuration and interpreter version.
 
-#### 3.4 Next Steps
+#### 3.4 Validation: All Four Configurations Confirmed Green
+
+Following the C1-06 fix, one `workflow_dispatch` validation run was triggered for every configuration (C1 run `32641625798`, C2 run `32641801574`, C3 run `32641805322`, C4 run `32641809541`). All four completed successfully across the full Python 3.10/3.11/3.12 matrix, including the lint and coverage jobs on C3/C4, and all produced valid Eco-CI JSON artifacts. This is the first time in the project's history that every configuration has produced a real, verified measurement.
+
+Representative real numbers from the C1 validation run (not part of the 30-run protocol; recorded here as evidence the pipeline now works, not as a result):
+
+| Python | Total energy (J) | SCI (gCO₂eq/run, Ireland-equivalent 472 gCO₂eq/kWh grid) |
+|---|---|---|
+| 3.10 | 463.24 | 0.096526 |
+| 3.11 | 330.80 | 0.070374 |
+| 3.12 | 458.37 | 0.095648 |
+
+#### 3.5 Next Steps
 
 - [x] Trigger one `workflow_dispatch` run per configuration (C1–C4) to confirm the fix holds in the actual GitHub Actions environment, not just locally — C1 confirmed for the Big5 fix; C1-06 found and fixed as a result
-- [ ] Re-trigger C1–C4 to confirm both fixes together produce a fully green run across the whole matrix
-- [ ] Begin the full 30-run protocol per Section 3.5 once all four configurations are confirmed green
+- [x] Re-trigger C1–C4 to confirm both fixes together produce a fully green run across the whole matrix — confirmed, all four green
+- [ ] Begin the full 30-run protocol per Section 3.5 now that all four configurations are confirmed green
 - [ ] Extend the same fork-and-fix procedure to the remaining four projects (got, Retrofit, resty, size-axis) as each is instrumented
 
 ---
