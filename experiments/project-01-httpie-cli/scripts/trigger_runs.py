@@ -60,6 +60,8 @@ DEFAULT_INTERVAL   = 300   # seconds between runs (5 min)
 POLL_INTERVAL      = 30    # seconds between status polls while a run is in progress
 TRIGGER_TIMEOUT    = 120   # seconds to wait for a triggered run to appear in the API
 RUN_TIMEOUT        = 1800  # seconds before giving up on a single run (30 min)
+MAX_RETRIES        = 5     # retries for transient network errors (timeouts, connection resets)
+RETRY_BACKOFF      = 10    # seconds, doubled on each retry
 
 
 # ---------------------------------------------------------------------------
@@ -78,18 +80,39 @@ def headers() -> dict:
     }
 
 
+def _with_retries(label: str, fn):
+    """Retry a request on transient network errors (timeouts, connection resets, DNS
+    hiccups). GitHub's API occasionally drops a connection over a multi-hour session;
+    without this, a single blip previously killed the entire run loop permanently."""
+    last_exc = None
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return fn()
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+            last_exc = exc
+            wait = RETRY_BACKOFF * (2 ** (attempt - 1))
+            print(f"  [network] {label} failed ({exc.__class__.__name__}), "
+                  f"retry {attempt}/{MAX_RETRIES} in {wait}s …")
+            time.sleep(wait)
+    raise last_exc
+
+
 def get(url: str, params: dict | None = None) -> dict | list:
-    resp = requests.get(url, headers=headers(), params=params, timeout=30)
-    _handle_rate_limit(resp)
-    resp.raise_for_status()
-    return resp.json()
+    def _do():
+        resp = requests.get(url, headers=headers(), params=params, timeout=30)
+        _handle_rate_limit(resp)
+        resp.raise_for_status()
+        return resp.json()
+    return _with_retries(f"GET {url}", _do)
 
 
 def post(url: str, payload: dict) -> None:
-    resp = requests.post(url, headers=headers(), json=payload, timeout=30)
-    _handle_rate_limit(resp)
-    if resp.status_code not in (201, 204):
-        resp.raise_for_status()
+    def _do():
+        resp = requests.post(url, headers=headers(), json=payload, timeout=30)
+        _handle_rate_limit(resp)
+        if resp.status_code not in (201, 204):
+            resp.raise_for_status()
+    return _with_retries(f"POST {url}", _do)
 
 
 def _handle_rate_limit(resp: requests.Response) -> None:
@@ -194,30 +217,41 @@ def main() -> None:
         print(f"{'='*60}")
         print(f"Run {run_num}/{args.runs}   {datetime.now().strftime('%H:%M:%S')}")
 
-        # Trigger
-        triggered_at = trigger_dispatch(workflow_id, args.branch)
-        print(f"  triggered at {triggered_at}")
+        try:
+            # Trigger
+            triggered_at = trigger_dispatch(workflow_id, args.branch)
+            print(f"  triggered at {triggered_at}")
 
-        # Find the run ID
-        run_id = find_triggered_run(args.branch, triggered_at, workflow_id)
-        if run_id is None:
-            print(f"  ERROR: run did not appear within {TRIGGER_TIMEOUT}s — skipping.")
+            # Find the run ID
+            run_id = find_triggered_run(args.branch, triggered_at, workflow_id)
+            if run_id is None:
+                print(f"  ERROR: run did not appear within {TRIGGER_TIMEOUT}s — skipping.")
+                failed += 1
+                continue
+
+            print(f"  run ID: {run_id}")
+            print(f"  URL: https://github.com/{GITHUB_REPO}/actions/runs/{run_id}")
+
+            # Wait for completion
+            conclusion = wait_for_run(run_id)
+            elapsed = int(time.time() - run_start)
+            print(f"  finished: {conclusion}  ({elapsed}s)")
+
+            if conclusion in ("success", "neutral"):
+                completed += 1
+            else:
+                failed += 1
+                print(f"  WARNING: run concluded with '{conclusion}' — data may be incomplete.")
+        except Exception as exc:
+            # A run-level failure (exhausted retries, unexpected API response, etc.)
+            # should not kill the remaining 29 runs in this batch. Log it, count it
+            # as failed, and continue — this is what let 15 of 24 parallel trigger
+            # loops die silently and stall for good during the full protocol.
             failed += 1
+            print(f"  ERROR: run {run_num} failed unrecoverably: {exc.__class__.__name__}: {exc}")
+            print(f"  Continuing to next run after a short pause …")
+            time.sleep(30)
             continue
-
-        print(f"  run ID: {run_id}")
-        print(f"  URL: https://github.com/{GITHUB_REPO}/actions/runs/{run_id}")
-
-        # Wait for completion
-        conclusion = wait_for_run(run_id)
-        elapsed = int(time.time() - run_start)
-        print(f"  finished: {conclusion}  ({elapsed}s)")
-
-        if conclusion in ("success", "neutral"):
-            completed += 1
-        else:
-            failed += 1
-            print(f"  WARNING: run concluded with '{conclusion}' — data may be incomplete.")
 
         # Inter-run interval: wait until at least `interval` seconds have passed
         # since this run started (not since it ended)
