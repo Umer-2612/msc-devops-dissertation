@@ -1,0 +1,78 @@
+# ============================================================
+# Project 05: Gson (Java JSON library) — size-axis observation
+# Config C3 (consolidation): structurally identical to C1.
+#
+# For this study's purposes, Gson's reproducible CI surface is reduced to
+# the single core `mvn test` job (Section 3.2.1); there is nothing to
+# consolidate, so this file is intentionally identical to C1 except for
+# its name and artifact label, matching the precedent set by got,
+# Retrofit, and resty.
+# ============================================================
+name: P05 Gson C3 Consolidated
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Run label (e.g. run-01)'
+        required: false
+        default: 'research run'
+
+env:
+  MAVEN_ARGS: --show-version --batch-mode --no-transfer-progress
+
+jobs:
+  test:
+    name: Build on JDK 21
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Eco-CI Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: start-measurement
+        continue-on-error: true
+
+      - name: Checkout gson at gson-parent-2.14.0
+        uses: actions/checkout@v4
+        with:
+          repository: google/gson
+          ref: 'gson-parent-2.14.0'
+
+      - name: Eco-CI checkout measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: get-measurement
+          label: 'checkout'
+        continue-on-error: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Eco-CI test-execution measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: get-measurement
+          label: 'test-execution'
+        continue-on-error: true
+
+      - name: Eco-CI display results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v5
+        with:
+          task: display-results
+          json-output: true
+        continue-on-error: true
+
+      - name: Upload Eco-CI artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eco-ci-p05-c3-tests
+          path: /tmp/eco-ci/
+          retention-days: 30
