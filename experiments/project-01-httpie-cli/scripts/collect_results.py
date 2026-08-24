@@ -41,6 +41,14 @@ GITHUB_REPO = os.environ.get("GITHUB_REPO")
 # Matches workflow filenames like p01-httpie-c1-tests.yml -> project="httpie", config="C1"
 WORKFLOW_FILENAME_RE = re.compile(r"^p\d+-(?P<project>[a-z0-9]+)-c(?P<config>[1-4])-")
 
+# Excludes early validation/test-batch runs (Section 4.4, Appendix A) triggered
+# before the full n=30 protocol began. Without this cutoff, collect_results.py
+# silently pulls in every historical run ever dispatched against a workflow,
+# inflating some cells to n=31-33 with contaminating pre-protocol data; this
+# bug produced incorrect per-project run counts in an earlier draft of
+# Chapter 5 and is documented in RESEARCH_LOG.md.
+PROTOCOL_START = "2026-08-23T14:29:00Z"
+
 OUTPUT_CSV = Path("results/raw_data.csv")
 OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
 
@@ -109,11 +117,15 @@ def paginate(url: str, key: str, params: dict = None) -> list:
 # Core logic
 # ---------------------------------------------------------------------------
 def list_workflow_runs() -> list[dict]:
-    """Fetch all completed workflow runs for the repository."""
+    """Fetch all completed workflow runs for the repository, restricted to the
+    full n=30 protocol window (PROTOCOL_START onward) so that earlier
+    validation/debugging dispatches are excluded from the dataset."""
     url = f"https://api.github.com/repos/{GITHUB_REPO}/actions/runs"
     runs = paginate(url, "workflow_runs", {"status": "completed", "branch": "main"})
-    print(f"Found {len(runs)} completed workflow runs.")
-    return runs
+    protocol_runs = [r for r in runs if r.get("created_at", "") >= PROTOCOL_START]
+    print(f"Found {len(runs)} completed workflow runs total; "
+          f"{len(protocol_runs)} within the protocol window (>= {PROTOCOL_START}).")
+    return protocol_runs
 
 
 def list_artifacts(run_id: int) -> list[dict]:

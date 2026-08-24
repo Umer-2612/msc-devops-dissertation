@@ -18,7 +18,7 @@ Continuous Integration and Continuous Deployment (CI/CD) pipelines build, test, 
 
 This dissertation addresses that gap through a controlled, within-subjects experiment. Four progressively refined pipeline configurations, a baseline (C1), dependency caching (C2), workflow consolidation (C3), and all three strategies combined including path filtering (C4), are applied to a set of real open-source GitHub Actions projects. Energy is measured directly inside CI using the Eco-CI energy estimation tool, and carbon is computed using the Software Carbon Intensity specification (ISO/IEC 21031:2024). The study answers three research questions: the carbon reduction attributable to each strategy (RQ1), the consistency of those savings across project languages and sizes (RQ2), and the carbon saved per unit of implementation effort (RQ3).
 
-To isolate the effect of language and toolchain from the effect of what a project does, the cross-language comparison holds the application domain constant by studying HTTP-client libraries across Python (HTTPie), JavaScript (got), Java (Retrofit), and Go (resty), with a larger Java project (Gson) added on the size axis. Across 719 of 720 planned runs, dependency caching produced a statistically significant, large-effect energy reduction (Wilcoxon signed-rank, Bonferroni-corrected α = 0.0167) in three of five projects, ranging from a 40.67% reduction in Retrofit to no effect in resty, tracking each project's dependency-graph size rather than its language. Workflow consolidation produced no statistically significant effect in any project, including HTTPie, the only project where genuine consolidation occurs, a null result that directly extends the literature's prior silence on this strategy (no earlier study had isolated it as a standalone, measured intervention). A five-region carbon-intensity analysis further shows that runner geography produces a consistent 16.3× carbon differential (Norway versus Singapore) for identical pipelines, an order of magnitude larger than any configuration-level effect measured, including the largest caching result observed.
+To isolate the effect of language and toolchain from the effect of what a project does, the cross-language comparison holds the application domain constant by studying HTTP-client libraries across Python (HTTPie), JavaScript (got), Java (Retrofit), and Go (resty), with a larger Java project (Gson) added on the size axis. Across 720 of 720 planned runs (719 producing usable data after one unrelated single-run flake), dependency caching produced a statistically significant, large-effect energy reduction (Wilcoxon signed-rank, Bonferroni-corrected α = 0.0167) in three of five projects, ranging from a 33.85% reduction in Retrofit to no effect in resty, tracking each project's dependency-graph size rather than its language. Workflow consolidation produced no statistically significant effect in any project, including HTTPie, the only project where genuine consolidation occurs, a null result that directly extends the literature's prior silence on this strategy (no earlier study had isolated it as a standalone, measured intervention). A five-region carbon-intensity analysis further shows that runner geography produces a consistent 16.3× carbon differential (Norway versus Singapore) for identical pipelines, an order of magnitude larger than any configuration-level effect measured, including the largest caching result observed.
 
 **Keywords:** green software engineering, CI/CD, GitHub Actions, carbon emissions, Software Carbon Intensity, Eco-CI, dependency caching, sustainable DevOps.
 
@@ -170,7 +170,7 @@ This work provides important empirical grounding for the aggregate energy footpr
 
 ### 2.2.3 Energy Consumption of Continuous Integration in Java Projects
 
-A 2026 IEEE study, "On the Energy Consumption of Continuous Integration in Open-Source Java Projects" (Document 11500151), provides the first comprehensive baseline of CI energy use through a large-scale analysis of 204 open-source Java projects, measuring energy consumption under Maven and Gradle build systems with repeated measurements. **One-line takeaway: dependency caching cuts CI energy by 30% on average and by over 90% in the best cases, making it the single strongest empirically validated intervention in the literature.**
+A 2026 IEEE study, "On the Energy Consumption of Continuous Integration in Open-Source Java Projects" (Document 11500151), provides the first comprehensive baseline of CI energy use through a large-scale analysis of 204 open-source Java projects, measuring energy consumption under Maven and Gradle build systems with repeated measurements. **One-line takeaway: dependency caching cuts CI energy by 30% on average and by over 90% in the best cases, making it the single strongest empirically validated intervention in the literature.** This citation's bibliographic record could not be independently re-verified against IEEE Xplore at the time of writing (no named author list and an unresolved DOI, noted in the References list); the findings summarised here should accordingly be treated with somewhat lower confidence than the other, fully author-attributed sources in this review, and the reader is directed to confirm the record directly at the DOI/URL given in the bibliography before relying on the specific percentages cited.
 
 The study finds that energy use is highly skewed: while most projects consume energy modestly, a minority of CI-intensive systems reach annual CI energy footprints of hundreds of kilowatt-hours, comparable to a quarter of an average EU household's electricity use.
 
@@ -379,11 +379,11 @@ Four configurations are evaluated per project, summarised in Table 3.3. Each rep
 | **C1 — Baseline** | Project's existing separate workflow files | No | None |
 | **C2 — Caching** | Same files as C1 | Yes (idiomatic per ecosystem) | None |
 | **C3 — Consolidation** | Separate workflows merged into one | No | None |
-| **C4 — Combined** | Merged workflow + caching | Yes | Path filters defined |
+| **C4 — Combined** | Merged workflow + caching | Yes | Designed for, not exercised in measurement (see below) |
 
 *Table 3.3: The four experimental configurations and what changes between them.*
 
-C1 establishes the baseline energy consumption of the unmodified pipeline, with only Eco-CI instrumentation added. C2 isolates dependency caching. C3 isolates workflow consolidation, merging the separate workflow files into a single sequential chain while keeping the total work identical, so that any energy difference from C1 is attributable to eliminating duplicated runner-provisioning overhead rather than to doing less work. C4 tests the combined effect of all three strategies. Path-based trigger filtering is defined as part of the combined configuration, but because all research runs are triggered manually via `workflow_dispatch` against a fixed external ref, the path filters do not fire during measurement; their real-world benefit, preventing runs entirely when only documentation changes, is treated as a construct-validity consideration rather than captured in per-run energy (Section 6.6). The exact per-project, per-ecosystem implementation of each configuration, including the specific caching keys and merge structure used for HTTPie, is presented in Chapter 4.
+C1 establishes the baseline energy consumption of the unmodified pipeline, with only Eco-CI instrumentation added. C2 isolates dependency caching. C3 isolates workflow consolidation, merging the separate workflow files into a single sequential chain while keeping the total work identical, so that any energy difference from C1 is attributable to eliminating duplicated runner-provisioning overhead rather than to doing less work. C4 tests the combined effect of caching and consolidation together. Path-based trigger filtering was part of C4's original design intent, but every workflow file in this study, C4 included, is triggered exclusively via `workflow_dispatch` rather than `push`/`pull_request`, a deliberate choice that lets the protocol dispatch an exact, controlled count of runs per configuration (Section 3.6). None of the twenty-four workflow files therefore defines a `paths`/`paths-ignore` filter on an actual push trigger, so path filtering's effect on carbon is not exercised or measured anywhere in this study; C4's measured energy reflects only caching plus consolidation. This gap is treated as a construct-validity limitation, not a minor omission (Section 6.6), and the recommendation to adopt path filtering rests on the adoption-gap evidence in Bouzenia and Pradel (2024) rather than on measurement performed here. The exact per-project, per-ecosystem implementation of each configuration, including the specific caching keys and merge structure used for HTTPie, is presented in Chapter 4.
 
 ## 3.4 Instrumentation: Eco-CI Integration
 
@@ -464,7 +464,7 @@ This section gives the exact, per-configuration implementation for the anchor pr
 
 **C3 — Consolidation.** The three workflow files are merged into a single `ci-consolidated.yml`, restructured as a sequential job chain: lint, then test, then coverage. This removes two of the three redundant runner-provisioning and checkout-and-install cycles while keeping the total amount of work identical to C1, isolating the consolidation effect from any change in what is actually executed.
 
-**C4 — Combined.** The merged structure from C3, with caching from C2 applied throughout, plus path-based trigger filters defined on the workflow's `on:` block so that pushes touching only documentation or non-source paths do not trigger a run at all.
+**C4 — Combined.** The merged structure from C3, with caching from C2 applied throughout. Path-based trigger filtering, restricting a `push`/`pull_request` trigger so that changes touching only documentation or non-source paths do not run the pipeline at all, was part of C4's original design intent but is not present in any workflow file used in this study: every file, C4 included, is triggered exclusively via `workflow_dispatch` so that the protocol can dispatch an exact, controlled number of runs per configuration (Section 3.6). Consequently C4's measured energy reflects caching and consolidation combined, not path filtering, which remains unmeasured (Section 6.6).
 
 Table 4.1 summarises the cross-ecosystem adaptation of the caching mechanism, extending Section 3.2.5.
 
@@ -561,94 +561,99 @@ Each stage in this pipeline is deterministic and scripted, so the same raw artif
 
 ## 5.1 Overview
 
-This chapter presents the results of the full data-collection protocol: 719 of 720 planned runs completed successfully (30 runs per configuration for every project except one, where a single Node.js 24 run flaked on an unrelated test-suite timing issue, leaving n = 29; see Section 6.6). Section 5.2 restates the analytical approach. Section 5.3 gives descriptive statistics and normality results. Section 5.4 presents the Wilcoxon signed-rank comparisons that answer RQ1. Section 5.5 compares strategy effectiveness across projects to answer RQ2. Section 5.6 gives the multi-region SCI analysis.
+This chapter presents the results of the full data-collection protocol: 720 of 720 planned runs completed, with 719 producing usable data (one got, C1 run failed on Node.js 24 with an unrelated test-suite timing issue; the identical Node.js 22 job in the same run succeeded, so this is treated as a single-run flake rather than a configuration defect; see Section 6.6). Section 5.2 restates the analytical approach. Section 5.3 gives descriptive statistics and normality results. Section 5.4 presents the Wilcoxon signed-rank comparisons that answer RQ1. Section 5.5 compares strategy effectiveness across projects to answer RQ2. Section 5.6 gives the multi-region SCI analysis.
 
-All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-latest` runners, collected between 23 August 2026 and completion of the protocol the same day. Eco-CI reported a carbon intensity of 472 gCO₂eq/kWh for the Azure runner location throughout. SCI figures are computed as the operational component E × I at the run level, following Section 3.6. For HTTPie, whose C1 and C2 configurations span three separate workflow files (tests, code-style, coverage), one "run" is reconstructed by pairing the same chronological position across all three files, so that a total-energy-per-cycle figure is directly comparable to C3 and C4's single consolidated workflow and to every other project's single-workflow configurations.
+All energy measurements are from real Eco-CI runs on GitHub-hosted `ubuntu-latest` runners, collected on 23 August 2026. Eco-CI reported a carbon intensity of 472 gCO₂eq/kWh for the Azure runner location throughout. SCI figures are computed as the operational component E × I at the run level, following Section 3.6. Every table in this chapter reports exactly n = 30 per configuration per project: an earlier draft of this analysis inadvertently included a small number of pre-protocol validation runs (used during the pipeline audit described in Appendix A) alongside the true protocol data, which the data-collection script (`collect_results.py`) has since been corrected to exclude by restricting collection to runs created after the protocol's start timestamp.
+
+For HTTPie, whose C1 and C2 configurations span three separate workflow files (tests, code-style, coverage) rather than the single file every other configuration and project uses, one "run" is reconstructed by summing each file's own per-stage totals within the same chronological position across the three files, so that a total-energy-per-cycle figure is comparable to C3 and C4's single consolidated workflow and to every other project's single-workflow configurations. This reconstruction is a necessary methodological choice, not a neutral one, and its consequences for the cross-project comparisons in Section 5.5 are discussed there and in Section 6.6.
 
 ## 5.2 Analytical Approach
 
-All statistical analysis is performed in a Python analysis notebook using scipy, pandas, numpy, and matplotlib (`experiments/project-01-httpie-cli/analysis/energy_analysis.ipynb`).
+All statistical analysis is performed in a Python analysis script (`experiments/project-01-httpie-cli/analysis/full_analysis.py`, mirrored in `energy_analysis.ipynb`) using scipy, pandas, numpy, and matplotlib.
 
-Shapiro-Wilk normality tests were applied to each project-by-configuration sample of total energy per run. HTTPie's four configurations were the only ones that did not reject normality (p > 0.18 in all four cases); every configuration for got, Retrofit, resty, and Gson rejected normality (p < 0.05, and p < 0.0001 in most cases), consistent with the expectation that CI energy distributions are typically right-skewed by occasional slow, high-variance runs rather than symmetric. This confirms the non-parametric approach specified in advance was the correct choice: a parametric paired t-test would have been invalid for four of the five projects.
+Shapiro-Wilk normality tests were applied to each project-by-configuration sample of total energy per run. HTTPie's four configurations were the only ones that did not reject normality in every case (p > 0.10 throughout); every other project rejected normality for at least two of its four configurations, and resty rejected it for all four (p < 0.0001). This confirms the non-parametric approach specified in advance was the correct choice: a parametric paired t-test would have been invalid for the majority of project/configuration combinations.
 
-The primary comparison uses Wilcoxon signed-rank tests to compare total energy per CI run between C1 (baseline) and each of C2, C3, and C4, pairing runs by chronological order within each project. Because three comparisons are made per project, a Bonferroni correction adjusts the significance threshold to α = 0.05 / 3 = 0.0167. Effect size is reported with Cliff's delta (δ), interpreted following Romano et al. (2006): |δ| below 0.147 negligible, below 0.330 small, below 0.474 medium, and 0.474 or above large.
+The primary comparison uses Wilcoxon signed-rank tests to compare total energy per CI run between C1 (baseline) and each of C2, C3, and C4, pairing runs by chronological trigger order within each project, since no other shared identifier links a C1 run to a "corresponding" C2, C3, or C4 run: they are independently triggered executions of different workflow files, not a shared subject measured twice. This ordinal pairing is a deliberate design choice, made because the alternative, an unpaired Mann-Whitney U test, discards the within-subjects structure of triggering all four configurations against the same fixed, frozen subject code under matched conditions (same day, same 5-minute inter-run interval, same runner type); it is revisited as a threat to validity in Section 6.6. Because three comparisons are made per project, a Bonferroni correction adjusts the significance threshold to α = 0.05 / 3 = 0.0167. Effect size is reported with Cliff's delta (δ), interpreted following Romano et al. (2006): |δ| below 0.147 negligible, below 0.330 small, below 0.474 medium, and 0.474 or above large.
 
 ## 5.3 Descriptive Statistics
 
-Table 5.1 reports the mean, median, and standard deviation of total energy per CI run for every project and configuration.
+Table 5.1 reports the mean, median, and standard deviation of total energy per CI run for every project and configuration, all at n = 30.
 
 | Project | Config | n | Mean (J) | Median (J) | SD (J) |
 |---|---|---|---|---|---|
-| HTTPie | C1 | 31 | 2,007.01 | 2,014.35 | 44.34 |
-| HTTPie | C2 | 31 | 1,916.73 | 1,927.92 | 78.69 |
-| HTTPie | C3 | 31 | 1,999.71 | 2,004.75 | 52.70 |
-| HTTPie | C4 | 31 | 1,910.23 | 1,929.92 | 65.25 |
-| got | C1 | 31 | 1,025.10 | 1,040.27 | 83.45 |
-| got | C2 | 31 | 1,007.48 | 1,019.62 | 60.63 |
-| got | C3 | 31 | 1,027.54 | 1,026.58 | 42.34 |
-| got | C4 | 32 | 958.04 | 1,004.60 | 180.15 |
-| Retrofit | C1 | 32 | 542.42 | 511.56 | 221.90 |
-| Retrofit | C2 | 32 | 321.84 | 335.53 | 64.00 |
-| Retrofit | C3 | 32 | 484.21 | 503.36 | 98.37 |
-| Retrofit | C4 | 32 | 387.19 | 339.59 | 300.13 |
-| resty | C1 | 31 | 240.42 | 231.35 | 29.23 |
-| resty | C2 | 31 | 248.60 | 231.23 | 41.94 |
-| resty | C3 | 31 | 244.10 | 234.53 | 39.10 |
-| resty | C4 | 31 | 243.65 | 229.59 | 42.49 |
-| Gson | C1 | 32 | 260.01 | 261.16 | 52.03 |
-| Gson | C2 | 32 | 214.40 | 222.49 | 42.93 |
-| Gson | C3 | 33 | 250.11 | 266.51 | 67.55 |
-| Gson | C4 | 31 | 211.36 | 219.13 | 25.05 |
+| HTTPie | C1 | 30 | 2,008.90 | 2,015.75 | 43.81 |
+| HTTPie | C2 | 30 | 1,917.22 | 1,938.22 | 79.99 |
+| HTTPie | C3 | 30 | 1,998.06 | 2,004.39 | 52.78 |
+| HTTPie | C4 | 30 | 1,909.18 | 1,929.54 | 66.10 |
+| got | C1 | 30 | 1,023.92 | 1,037.37 | 84.61 |
+| got | C2 | 30 | 1,008.61 | 1,021.54 | 61.33 |
+| got | C3 | 30 | 1,029.29 | 1,027.37 | 41.91 |
+| got | C4 | 30 | 993.45 | 1,006.21 | 44.91 |
+| Retrofit | C1 | 30 | 502.52 | 510.87 | 30.93 |
+| Retrofit | C2 | 30 | 332.40 | 335.98 | 28.15 |
+| Retrofit | C3 | 30 | 500.02 | 505.89 | 46.31 |
+| Retrofit | C4 | 30 | 333.16 | 339.41 | 23.70 |
+| resty | C1 | 30 | 236.04 | 230.87 | 16.36 |
+| resty | C2 | 30 | 242.92 | 230.86 | 28.01 |
+| resty | C3 | 30 | 237.71 | 234.10 | 16.50 |
+| resty | C4 | 30 | 237.14 | 229.57 | 22.56 |
+| Gson | C1 | 30 | 269.01 | 262.45 | 24.02 |
+| Gson | C2 | 30 | 219.16 | 222.49 | 19.25 |
+| Gson | C3 | 30 | 265.20 | 268.23 | 24.83 |
+| Gson | C4 | 30 | 210.83 | 219.02 | 25.30 |
 
-*Table 5.1: Descriptive statistics, total energy per CI run, all five projects and four configurations (n ≈ 30 each).*
+*Table 5.1: Descriptive statistics, total energy per CI run, all five projects and four configurations, n = 30 throughout.*
 
 Figure 5.1 and Figure 5.2 show these distributions graphically.
 
 ![Figure 5.1](../experiments/project-01-httpie-cli/results/figures/fig5_1_mean_energy_by_project.png)
 
-*Figure 5.1: Mean total energy per run, by configuration and project (n ≈ 30, error bars = ±1 SD).*
+*Figure 5.1: Mean total energy per run, by configuration and project (n = 30, error bars = ±1 SD).*
 
 ![Figure 5.2](../experiments/project-01-httpie-cli/results/figures/fig5_2_energy_boxplot_by_project.png)
 
 *Figure 5.2: Per-run energy distribution underlying the Wilcoxon comparisons.*
 
-Table 5.2 breaks HTTPie's total down by measurement stage, illustrating the mechanism that Section 6.2 interprets: caching's effect concentrates in dependency installation, while test execution and coverage are comparatively stable.
+Table 5.2 breaks HTTPie's total down by measurement stage, on the same reconstructed-per-cycle basis as Table 5.1 (each configuration's column sums to its corresponding Table 5.1 total to within about 0.2%, a residual explained by a small number of individual stage measurements Eco-CI did not emit for a given job despite the job itself completing successfully; `continue-on-error: true` on every Eco-CI step, Section 4.4, prevents this from failing the run, at the cost of an occasional missing measurement row rather than a missing job).
 
 | Stage | C1 (J) | C2 (J) | C3 (J) | C4 (J) |
 |---|---|---|---|---|
-| checkout | 5.10 | 5.31 | 5.69 | 5.44 |
-| dependency-installation | 93.08 | 77.96 | 91.61 | 77.86 |
-| lint | 74.66 | 70.31 | 74.19 | 68.79 |
-| test-execution | 334.92 | 332.70 | 332.03 | 327.16 |
-| coverage | 364.98 | 366.04 | 373.07 | 372.21 |
+| checkout | 23.55 | 22.38 | 20.87 | 20.77 |
+| dependency-installation | 463.36 | 388.62 | 457.57 | 388.35 |
+| lint | 74.70 | 70.74 | 74.12 | 68.55 |
+| test-execution | 1,008.45 | 997.15 | 994.83 | 981.61 |
+| coverage | 366.56 | 365.91 | 372.80 | 372.20 |
+| dist-test | 76.21 | 76.62 | 77.88 | 77.70 |
 
-*Table 5.2: HTTPie mean energy per stage, by configuration (n ≈ 30 per cell).*
+*Table 5.2: HTTPie mean energy per stage, by configuration, reconstructed per cycle (n = 30 per cell; column sums approximate Table 5.1's totals to within 0.2%).*
+
+C1's checkout and dependency-installation figures (23.55 J and 463.36 J) are visibly larger than C3's and C4's (20.87–20.77 J and 457.57–388.35 J): this is the direct signature of running three separate workflow files, each with its own checkout and dependency-installation step, against one consolidated workflow that pays that cost once. The caching effect, comparing C1 to C2, is concentrated almost entirely in dependency-installation (463.36 J to 388.62 J, a 16.1% reduction) with test-execution nearly unchanged (1,008.45 J to 997.15 J, 1.1%), which is the mechanistic pattern Section 6.2 interprets.
 
 ## 5.4 Full 30-Run Results (RQ1)
 
-Table 5.3 reports the Wilcoxon signed-rank comparison of each configuration against C1, with Bonferroni-corrected significance (α = 0.0167) and Cliff's delta effect size, for every project.
+Table 5.3 reports the Wilcoxon signed-rank comparison of each configuration against C1, with Bonferroni-corrected significance (α = 0.0167) and Cliff's delta effect size, for every project, all at n = 30.
 
 | Project | Comparison | n | p-value | Significant? | Cliff's δ | Effect | % change |
 |---|---|---|---|---|---|---|---|
-| HTTPie | C2 vs C1 | 31 | 0.00001 | Yes | +0.696 | large | −4.50% |
-| HTTPie | C3 vs C1 | 31 | 0.608 | No | +0.066 | negligible | −0.36% |
-| HTTPie | C4 vs C1 | 31 | <0.00001 | Yes | +0.836 | large | −4.82% |
-| got | C2 vs C1 | 31 | 0.125 | No | +0.305 | small | −1.72% |
-| got | C3 vs C1 | 31 | 0.456 | No | +0.163 | small | +0.24% |
-| got | C4 vs C1 | 31 | 0.00107 | Yes | +0.603 | large | −6.54% |
-| Retrofit | C2 vs C1 | 32 | <0.00001 | Yes | +0.998 | large | −40.67% |
-| Retrofit | C3 vs C1 | 32 | 0.665 | No | +0.084 | negligible | −10.73% |
-| Retrofit | C4 vs C1 | 32 | <0.00001 | Yes | +0.938 | large | −28.62% |
-| resty | C2 vs C1 | 31 | 0.281 | No | −0.045 | negligible | +3.40% |
-| resty | C3 vs C1 | 31 | 0.152 | No | −0.118 | negligible | +1.53% |
-| resty | C4 vs C1 | 31 | 0.568 | No | +0.066 | negligible | +1.34% |
-| Gson | C2 vs C1 | 32 | <0.00001 | Yes | +0.861 | large | −17.54% |
-| Gson | C3 vs C1 | 32 | 0.665 | No | +0.017 | negligible | −3.81% |
-| Gson | C4 vs C1 | 31 | <0.00001 | Yes | +0.917 | large | −18.71% |
+| HTTPie | C2 vs C1 | 30 | 0.00001 | Yes | +0.709 | large | −4.56% |
+| HTTPie | C3 vs C1 | 30 | 0.440 | No | +0.113 | negligible | −0.54% |
+| HTTPie | C4 vs C1 | 30 | <0.00001 | Yes | +0.844 | large | −4.96% |
+| got | C2 vs C1 | 30 | 0.164 | No | +0.276 | small | −1.50% |
+| got | C3 vs C1 | 30 | 0.612 | No | +0.131 | negligible | +0.52% |
+| got | C4 vs C1 | 30 | 0.00434 | Yes | +0.564 | large | −2.98% |
+| Retrofit | C2 vs C1 | 30 | <0.00001 | Yes | +0.998 | large | −33.85% |
+| Retrofit | C3 vs C1 | 30 | 0.952 | No | −0.011 | negligible | −0.50% |
+| Retrofit | C4 vs C1 | 30 | <0.00001 | Yes | +1.000 | large | −33.70% |
+| resty | C2 vs C1 | 30 | 0.416 | No | −0.047 | negligible | +2.91% |
+| resty | C3 vs C1 | 30 | 0.229 | No | −0.124 | negligible | +0.71% |
+| resty | C4 vs C1 | 30 | 0.777 | No | +0.071 | negligible | +0.47% |
+| Gson | C2 vs C1 | 30 | <0.00001 | Yes | +0.964 | large | −18.53% |
+| Gson | C3 vs C1 | 30 | 0.428 | No | +0.031 | negligible | −1.42% |
+| Gson | C4 vs C1 | 30 | <0.00001 | Yes | +0.980 | large | −21.63% |
 
-*Table 5.3: Wilcoxon signed-rank tests versus C1, Bonferroni-corrected significance, and Cliff's delta, all projects.*
+*Table 5.3: Wilcoxon signed-rank tests versus C1, Bonferroni-corrected significance, and Cliff's delta, all projects, n = 30 throughout.*
 
-Two results stand out immediately. First, **dependency caching (C2) produces a statistically significant, large-effect energy reduction in three of five projects** (HTTPie −4.50%, Retrofit −40.67%, Gson −17.54%) but not in got (−1.72%, not significant) or resty (+3.40%, not significant, wrong direction). Second, and contrary to the direction assumed when this study was designed, **workflow consolidation (C3) produces no statistically significant effect in any project**, including HTTPie, the only project where genuine consolidation occurs (three workflow files merged into one). The C3-versus-C1 effect size is negligible or small throughout, and Retrofit's numerically large-looking −10.73% carries a negligible Cliff's delta because of that project's high baseline variance (SD = 221.90 J against a mean of 542.42 J).
+Two results stand out immediately. First, **dependency caching (C2) produces a statistically significant, large-effect energy reduction in three of five projects** (HTTPie −4.56%, Retrofit −33.85%, Gson −18.53%) but not in got (−1.50%) or resty (+2.91%, wrong direction, though not significant). Second, and contrary to the direction assumed when this study was designed, **workflow consolidation (C3) produces no statistically significant effect in any project**, including HTTPie, the only project where genuine consolidation occurs (three workflow files merged into one). Every C3-versus-C1 comparison in Table 5.3 has a negligible Cliff's delta (|δ| ≤ 0.131), and Retrofit's C3 result (−0.50%, δ = −0.011), close to zero in both percentage and effect-size terms, is a clean confirmation of the null consolidation effect.
 
 ## 5.5 Cross-Project Comparison (RQ2)
 
@@ -658,21 +663,23 @@ Figure 5.3 shows the percentage change in mean energy between C4 and C1 for ever
 
 *Figure 5.3: Percentage energy change (C4 versus C1) by project.*
 
-The answer to RQ2 is unambiguous: **the savings are not consistent across projects.** The combined configuration's effect ranges from a large, significant −28.62% reduction in Retrofit down to a negligible, non-significant +1.34% in resty, a difference of thirty percentage points between the best and worst case. Table 5.4 summarises.
+The answer to RQ2 is unambiguous: **the savings are not consistent across projects.** The combined configuration's effect ranges from a large, significant −33.70% reduction in Retrofit down to a negligible, non-significant +0.47% in resty, a difference of thirty-four percentage points between the best and worst case. Table 5.4 summarises.
 
 | Project | Language | C4 vs C1 | Effect | Significant? |
 |---|---|---|---|---|
-| Retrofit | Java | −28.62% | large | Yes |
-| Gson | Java (size-axis) | −18.71% | large | Yes |
-| got | JavaScript | −6.54% | large | Yes |
-| HTTPie | Python | −4.82% | large | Yes |
-| resty | Go | +1.34% | negligible | No |
+| Retrofit | Java | −33.70% | large | Yes |
+| Gson | Java (size-axis) | −21.63% | large | Yes |
+| HTTPie | Python | −4.96% | large | Yes |
+| got | JavaScript | −2.98% | large | Yes |
+| resty | Go | +0.47% | negligible | No |
 
 *Table 5.4: Cross-project ranking of the combined-configuration effect, C4 versus C1.*
 
-The mechanism behind resty's null result is visible in its per-stage breakdown: dependency installation accounts for only 42 to 43 J of a roughly 240 J total (under 20%), because `go.mod` declares just two direct dependencies (`golang.org/x/net`, `golang.org/x/time`). There is very little dependency-installation work for caching to remove, so the near-zero effect is exactly what the mechanism in Section 6.2 predicts for a project with an unusually light dependency graph, not a contradiction of it. This is consistent with the module-cache and build-cache distinction flagged in Section 3.2.5 as a reason to interpret Go's caching result carefully, though the specific reason here is dependency-graph size rather than the caching mechanism itself.
+The mechanism behind resty's null result is visible in its per-stage data: dependency installation accounts for roughly 40 J of a roughly 236 J total (under 18%), because `go.mod` declares just two direct dependencies (`golang.org/x/net`, `golang.org/x/time`). There is very little dependency-installation work for caching to remove, so the near-zero effect is exactly what the mechanism in Section 6.2 predicts for a project with an unusually light dependency graph, not a contradiction of it. This is consistent with the module-cache and build-cache distinction flagged in Section 3.2.5 as a reason to interpret Go's caching result carefully, though the specific reason here is dependency-graph size rather than the caching mechanism itself.
 
-The consolidation-validity check anticipated in Section 3.2.5 also holds: for got, Retrofit, resty, and Gson, C1 and C3 are structurally identical pipelines, and the measured C1-versus-C3 differences (+0.24%, −10.73%, +1.53%, −3.81%) are all statistically non-significant, consistent with measurement noise rather than a real effect. This is an internal-consistency check on the measurement methodology succeeding, not a finding about consolidation itself, and it strengthens confidence that the equally non-significant C1-versus-C3 result for HTTPie (−0.36%), where consolidation is real, reflects a genuine absence of effect rather than a methodological blind spot.
+This comparison must be read with one important caveat, discussed fully as a threat to validity in Section 6.6: HTTPie's and got's totals are each sums across a language-version matrix (three Python versions for HTTPie, two Node.js versions for got) and, for HTTPie, three separate workflow files, whereas Retrofit's, resty's, and Gson's totals are each a single job execution. This asymmetry means the absolute and percentage comparisons in Table 5.4 are not comparing strictly identical units of "one CI run" across every project, and it is one reason, alongside dependency-graph size, that HTTPie's and got's baseline magnitudes (in the thousands of joules) differ so substantially from Retrofit's, resty's, and Gson's (in the hundreds).
+
+The consolidation-validity check anticipated in Section 3.2.5 also holds: for got, Retrofit, resty, and Gson, C1 and C3 are structurally identical pipelines, and the measured C1-versus-C3 differences (+0.52%, −0.50%, +0.71%, −1.42%) are all small in magnitude and carry negligible Cliff's delta, consistent with measurement noise rather than a real effect. This is an internal-consistency check on the measurement methodology succeeding, not a finding about consolidation itself, and it strengthens confidence that the equally non-significant C1-versus-C3 result for HTTPie (−0.54%), where consolidation is real, reflects a genuine absence of effect rather than a methodological blind spot.
 
 ## 5.6 Multi-Region SCI Analysis
 
@@ -680,29 +687,29 @@ Table 5.5 converts each project's mean C2 and C4 energy into SCI across five ele
 
 | Project | Region | C2 SCI (gCO₂eq) | C4 SCI (gCO₂eq) |
 |---|---|---|---|
-| HTTPie | Ireland | 0.18369 | 0.18306 |
-| HTTPie | Norway | 0.01331 | 0.01327 |
-| HTTPie | Singapore | 0.21723 | 0.21649 |
-| got | Ireland | 0.09655 | 0.09181 |
-| got | Norway | 0.00700 | 0.00665 |
-| got | Singapore | 0.11418 | 0.10858 |
-| Retrofit | Ireland | 0.03084 | 0.03711 |
-| Retrofit | Norway | 0.00224 | 0.00269 |
-| Retrofit | Singapore | 0.03648 | 0.04388 |
-| resty | Ireland | 0.02382 | 0.02335 |
-| resty | Norway | 0.00173 | 0.00169 |
-| resty | Singapore | 0.02817 | 0.02761 |
-| Gson | Ireland | 0.02055 | 0.02026 |
-| Gson | Norway | 0.00149 | 0.00147 |
-| Gson | Singapore | 0.02430 | 0.02395 |
+| HTTPie | Ireland | 0.18373 | 0.18296 |
+| HTTPie | Norway | 0.01331 | 0.01326 |
+| HTTPie | Singapore | 0.21728 | 0.21637 |
+| got | Ireland | 0.09666 | 0.09521 |
+| got | Norway | 0.00700 | 0.00690 |
+| got | Singapore | 0.11431 | 0.11259 |
+| Retrofit | Ireland | 0.03186 | 0.03193 |
+| Retrofit | Norway | 0.00231 | 0.00231 |
+| Retrofit | Singapore | 0.03767 | 0.03776 |
+| resty | Ireland | 0.02328 | 0.02273 |
+| resty | Norway | 0.00169 | 0.00165 |
+| resty | Singapore | 0.02753 | 0.02688 |
+| Gson | Ireland | 0.02100 | 0.02021 |
+| Gson | Norway | 0.00152 | 0.00146 |
+| Gson | Singapore | 0.02484 | 0.02389 |
 
-*Table 5.5: SCI per run, Ireland/Norway/Singapore, C2 versus C4, all five projects (Germany and USA are computed identically and shown in Figure 5.6).*
+*Table 5.5: SCI per run, Ireland/Norway/Singapore, C2 versus C4, all five projects, n = 30 (Germany and USA are computed identically and shown in Figure 5.6).*
 
 ![Figure 5.6](../experiments/project-01-httpie-cli/results/figures/fig5_6_sci_five_region.png)
 
 *Figure 5.6: SCI per run across five grid regions, C2 versus C4, by project.*
 
-The Norway-to-Singapore differential is consistent across every project and configuration at approximately 16.3× (408 ÷ 25 = 16.32), since it is a pure function of the fixed intensity ratio and does not depend on which project or configuration is measured. For HTTPie, this yields 0.01327 gCO₂eq (Norway) against 0.21649 gCO₂eq (Singapore) for the identical C4 pipeline: an order of magnitude larger than the −4.82% saving that same pipeline achieves over its own baseline through configuration alone. Retrofit's regional figures show C4's SCI exceeding C2's (0.03711 against 0.03084 in Ireland) purely because C4's mean energy (387.19 J) is higher than C2's (321.84 J) for that project, even though both are large, significant reductions from C1 (542.42 J): this is the same finding as Table 5.3's Retrofit row, restated in carbon terms, and is discussed further in Section 6.4.
+The Norway-to-Singapore differential is consistent across every project and configuration at approximately 16.3× (408 ÷ 25 = 16.32), since it is a pure function of the fixed intensity ratio and does not depend on which project or configuration is measured. For HTTPie, this yields 0.01326 gCO₂eq (Norway) against 0.21637 gCO₂eq (Singapore) for the identical C4 pipeline: an order of magnitude larger than the −4.96% saving that same pipeline achieves over its own baseline through configuration alone. Retrofit's regional figures show C4's SCI essentially unchanged from C2's (0.03193 against 0.03186 in Ireland), consistent with C2 and C4 having almost identical mean energy for that project (332.40 J and 333.16 J, Table 5.1) once the consolidation component, shown in Section 5.4 to have no measurable effect, is added on top of caching.
 
 
 ---
@@ -715,41 +722,47 @@ This chapter interprets the results in Chapter 5 against the three research ques
 
 ## 6.2 RQ1: Carbon Reduction per Strategy
 
-Dependency caching (C2) produces a statistically significant, large-effect energy reduction in three of the five projects studied: HTTPie (−4.50%, δ = 0.696), Retrofit (−40.67%, δ = 0.998), and Gson (−17.54%, δ = 0.861). It produces no significant effect in got (−1.72%) or resty (+3.40%, wrong direction, though not significant). HTTPie's per-stage breakdown (Table 5.2) shows exactly the mechanism expected: dependency installation falls from 93.08 J (C1) to 77.86 J (C4), a 16.4% reduction, while test execution barely moves (334.92 J to 327.16 J, 2.3%). This is mechanistically consistent with de Medeiros et al. (2025), who identify testing as CI's dominant energy stage, and with the IEEE (2026) Java study, which isolates caching as the highest-impact single intervention. Retrofit's exceptionally large caching effect (a 40.67% reduction, the largest single result in this study) is consistent with the same mechanism operating on a project with a substantially heavier Gradle dependency graph than HTTPie's pip requirements.
+Dependency caching (C2) produces a statistically significant, large-effect energy reduction in three of the five projects studied: HTTPie (−4.56%, δ = 0.709), Retrofit (−33.85%, δ = 0.998), and Gson (−18.53%, δ = 0.964). It produces no significant effect in got (−1.50%) or resty (+2.91%, wrong direction, though not significant). HTTPie's per-stage breakdown (Table 5.2) shows exactly the mechanism expected: dependency installation falls from 463.36 J (C1) to 388.35 J (C4), a 16.2% reduction, while test execution barely moves (1,008.45 J to 981.61 J, 2.7%). This is mechanistically consistent with de Medeiros et al. (2025), who identify testing as CI's dominant energy stage, and with the IEEE (2026) Java study, which isolates caching as the highest-impact single intervention. Retrofit's exceptionally large caching effect (a 33.85% reduction, the largest single result in this study) is consistent with the same mechanism operating on a project with a substantially heavier Gradle dependency graph than HTTPie's pip requirements.
 
-Workflow consolidation (C3), by contrast, **produces no statistically significant effect in any project**, including HTTPie, the only project in this study where genuine consolidation occurs. This is the most consequential single finding relative to what the literature review anticipated: Section 2.6 identified consolidation as the one strategy no prior paper had isolated as a standalone, measured intervention, and this dissertation's contribution is to report, for the first time, that the effect appears to be null, or at least too small to detect at n ≈ 30 against this study's runner-to-runner noise. A plausible mechanistic account is that GitHub Actions' runner-provisioning overhead, the checkout-and-boot cost that consolidation is designed to eliminate duplicate copies of, is simply too small relative to total pipeline energy to produce a measurable difference: Table 5.2's checkout row for HTTPie is 5 to 6 J per job against a job total in the hundreds of joules, so removing two of three such overheads saves single-digit joules against a base of nearly 2,000 J. Consolidation may still be worth doing for reasons this study does not measure, faster wall-clock CI feedback, simpler workflow maintenance, but the carbon case for it, on this evidence, is considerably weaker than the case for caching.
+Workflow consolidation (C3), by contrast, **produces no statistically significant effect in any project**, including HTTPie, the only project in this study where genuine consolidation occurs. This is the most consequential single finding relative to what the literature review anticipated: Section 2.6 identified consolidation as the one strategy no prior paper had isolated as a standalone, measured intervention, and this dissertation's contribution is to report, for the first time, that the effect appears to be null, or at least too small to detect at n = 30 against this study's runner-to-runner noise. A plausible mechanistic account is that GitHub Actions' runner-provisioning overhead, the checkout-and-boot cost that consolidation is designed to eliminate duplicate copies of, is simply too small relative to total pipeline energy to produce a measurable difference: Table 5.2's checkout row for HTTPie falls from 23.55 J (C1, three separate workflow files) to 20.77 J (C4, one consolidated file), so removing two of three such checkout-and-boot overheads saves under 3 J against a base of nearly 2,000 J. Consolidation may still be worth doing for reasons this study does not measure, faster wall-clock CI feedback, simpler workflow maintenance, but the carbon case for it, on this evidence, is considerably weaker than the case for caching.
 
-Combining all three strategies (C4) produces a statistically significant, large effect in four of five projects (HTTPie −4.82%, got −6.54%, Retrofit −28.62%, Gson −18.71%), tracking closely with each project's C2 result rather than adding a separate consolidation contribution, which is consistent with C3 having no independent effect to add. resty's C4 result (+1.34%, not significant) is the exception, discussed in Section 6.3.
+Combining all three strategies (C4) produces a statistically significant, large effect in four of five projects (HTTPie −4.96%, got −2.98%, Retrofit −33.70%, Gson −21.63%), tracking closely with each project's C2 result rather than adding a separate consolidation contribution, which is consistent with C3 having no independent effect to add. resty's C4 result (+0.47%, not significant) is the exception, discussed in Section 6.3.
 
 ## 6.3 RQ2: Cross-Project Consistency
 
-The answer to RQ2 is that savings are **not consistent across projects**, and the inconsistency is large enough to be the primary empirical finding of this study: the C4-versus-C1 effect ranges from Retrofit's −28.62% down to resty's +1.34%, a thirty-percentage-point spread across otherwise-comparable HTTP-client libraries. This directly answers the question the cross-language design (Section 3.2.2) was built to ask: holding application domain constant does not, on this evidence, produce consistent strategy effectiveness, because effectiveness instead tracks each project's dependency-graph size, which varies by language and ecosystem convention rather than by what the project does.
+The answer to RQ2 is that savings are **not consistent across projects**, and the inconsistency is large enough to be the primary empirical finding of this study: the C4-versus-C1 effect ranges from Retrofit's −33.70% down to resty's +0.47%, a thirty-four-percentage-point spread across otherwise-comparable HTTP-client libraries. This directly answers the question the cross-language design (Section 3.2.2) was built to ask: holding application domain constant does not, on this evidence, produce consistent strategy effectiveness, because effectiveness instead tracks each project's dependency-graph size, which varies by language and ecosystem convention rather than by what the project does.
 
-resty's null result is instructive rather than anomalous. Its `go.mod` declares two direct dependencies (`golang.org/x/net`, `golang.org/x/time`), so dependency installation is 42 to 43 J against a roughly 240 J total, under 18% of the pipeline. There is very little for caching to remove. This is consistent with the module-cache and build-cache distinction flagged in Section 3.2.5 as a reason to interpret Go's result carefully, though the mechanism here (a small dependency graph) is more directly explanatory than the dual-cache architecture itself. Retrofit sits at the opposite extreme: a Gradle multi-module project with a substantially larger set of transitive dependencies, and correspondingly the largest caching effect measured in this study.
+resty's null result is instructive rather than anomalous. Its `go.mod` declares two direct dependencies (`golang.org/x/net`, `golang.org/x/time`), so dependency installation is roughly 40 J against a roughly 236 J total, under 18% of the pipeline. There is very little for caching to remove. This is consistent with the module-cache and build-cache distinction flagged in Section 3.2.5 as a reason to interpret Go's result carefully, though the mechanism here (a small dependency graph) is more directly explanatory than the dual-cache architecture itself. Retrofit sits at the opposite extreme: a Gradle multi-module project with a substantially larger set of transitive dependencies, and correspondingly the largest caching effect measured in this study.
 
-The consolidation-validity check anticipated in Section 3.2.5 succeeded: for got, Retrofit, resty, and Gson, whose C1 and C3 configurations are structurally identical pipelines, the measured differences (+0.24%, −10.73%, +1.53%, −3.81%) were all statistically non-significant, as expected if the measurement methodology is sound and introduces no systematic bias between nominally-identical configurations. This gives confidence that HTTPie's equally non-significant C1-versus-C3 result, where consolidation is real, reflects a genuine absence of effect rather than noise the methodology failed to control for.
+The consolidation-validity check anticipated in Section 3.2.5 succeeded: for got, Retrofit, resty, and Gson, whose C1 and C3 configurations are structurally identical pipelines, the measured differences (+0.52%, −0.50%, +0.71%, −1.42%) were all small in magnitude and statistically non-significant, as expected if the measurement methodology is sound and introduces no systematic bias between nominally-identical configurations. This gives confidence that HTTPie's equally non-significant C1-versus-C3 result, where consolidation is real, reflects a genuine absence of effect rather than noise the methodology failed to control for.
+
+One caveat on comparability across this ranking is discussed fully in Section 6.6: HTTPie's and got's totals are sums across a language-version test matrix (and, for HTTPie, three separate workflow files), while Retrofit's, resty's, and Gson's totals are each a single job. The relative ordering of effect sizes is unaffected by this, since the comparison in each case is a project against its own baseline, but the reader should not treat the five projects' absolute energy totals as directly comparable "single CI run" units.
 
 ## 6.4 RQ3: Strategy Effectiveness Relative to Implementation Effort
 
 The three strategies differ markedly in implementation cost. Caching is roughly two lines per workflow file (a `cache:` key and, where needed, a `cache-dependency-path:` or manual `actions/cache` block for ecosystems without a committed lockfile, as got required, Section 4.3), the lowest-effort intervention. Path filtering is a few lines per file, moderate effort. Consolidation is the highest effort, on the order of fifty to a hundred lines of workflow restructuring.
 
-Given that caching is both the cheapest strategy to implement and the only one shown to produce a statistically significant effect anywhere in this study, it dominates the effort-adjusted ranking outright: **caching is the only strategy this dissertation can recommend on the evidence collected.** Consolidation's null result across all five projects makes its effort cost, the highest of the three, difficult to justify on carbon grounds alone, whatever its other software-engineering merits. Path filtering's real-world saving, preventing unnecessary runs from executing at all, is not captured by the `workflow_dispatch`-based measurement protocol (Section 3.3) and is not evaluated as an independent carbon effect in this study; the recommendation for it rests on the adoption-gap evidence in Bouzenia and Pradel (2024) rather than on measurement performed here.
+Given that caching is both the cheapest strategy to implement and the only one shown to produce a statistically significant effect anywhere in this study, it dominates the effort-adjusted ranking outright: **caching is the only strategy this dissertation can recommend on the evidence collected.** Consolidation's null result across all five projects makes its effort cost, the highest of the three, difficult to justify on carbon grounds alone, whatever its other software-engineering merits. Path filtering's real-world saving, preventing unnecessary runs from executing at all, is not captured by this study at all: none of the twenty-four workflow files used in the protocol, including the C4 files, define a `push`/`pull_request` trigger with `paths`/`paths-ignore` filtering; every run in this dataset was triggered manually via `workflow_dispatch` specifically so that the protocol could dispatch an exact, controlled count of runs per configuration (Section 3.6). Consequently, C4's measured energy in Chapter 5 reflects only the caching-plus-consolidation component of the combined configuration; path filtering's carbon benefit is not measured anywhere in this dissertation, and the recommendation for it rests entirely on the adoption-gap evidence in Bouzenia and Pradel (2024) rather than on any data collected here.
 
 The practical recommendation for open-source maintainers is therefore direct: enable dependency caching first, expect its effect to scale with how large the project's dependency graph actually is (large for Gradle/Maven-heavy Java projects, small for lean Go modules), and do not expect workflow consolidation to move the carbon needle, even though it may still be worth doing for maintainability reasons.
 
 ## 6.5 The Regional Carbon Dominance Finding
 
-The multi-region analysis (Section 5.6) shows runner location producing a carbon differential of approximately 16.3× (Norway versus Singapore) for an identical pipeline, consistently across every project and configuration, because the ratio depends only on the fixed grid-intensity values and not on the measured energy. For HTTPie's C4 configuration this is 0.01327 gCO₂eq (Norway) against 0.21649 gCO₂eq (Singapore): an order of magnitude larger than the −4.82% saving that same pipeline achieves over its own C1 baseline through configuration alone. This places pipeline configuration within a hierarchy of interventions. For organisations with control over runner region, through self-hosted runners or enterprise regional selection, geographic placement delivers more carbon impact than any workflow change measured in this study, Retrofit's 40.67% caching effect included. For the majority of open-source projects using default GitHub-hosted runners without regional control, configuration refinement, specifically caching, remains the primary actionable lever. This is consistent with Saavedra et al.'s (2025) finding that regional deployment can achieve up to 67.1% carbon reduction at the ecosystem level, and confirms the ceiling on configuration-level refinement that Section 2.7 anticipated from the literature before any data were collected.
+The multi-region analysis (Section 5.6) shows runner location producing a carbon differential of approximately 16.3× (Norway versus Singapore) for an identical pipeline, consistently across every project and configuration, because the ratio depends only on the fixed grid-intensity values and not on the measured energy. For HTTPie's C4 configuration this is 0.01326 gCO₂eq (Norway) against 0.21637 gCO₂eq (Singapore): an order of magnitude larger than the −4.96% saving that same pipeline achieves over its own C1 baseline through configuration alone. This places pipeline configuration within a hierarchy of interventions. For organisations with control over runner region, through self-hosted runners or enterprise regional selection, geographic placement delivers more carbon impact than any workflow change measured in this study, Retrofit's 33.85% caching effect included. For the majority of open-source projects using default GitHub-hosted runners without regional control, configuration refinement, specifically caching, remains the primary actionable lever. This is consistent with Saavedra et al.'s (2025) finding that regional deployment can achieve up to 67.1% carbon reduction at the ecosystem level, and confirms the ceiling on configuration-level refinement that Section 2.7 anticipated from the literature before any data were collected.
 
 ## 6.6 Threats to Validity
 
-**Construct validity.** Eco-CI estimates CPU energy only; network and disk activity during dependency installation are not captured, so the measured caching reductions are a lower bound on the true energy savings. The functional unit of one CI run may also understate real-world savings, because path filtering prevents many runs from executing entirely, an effect this study's `workflow_dispatch`-based protocol cannot observe (Section 3.3).
+**Construct validity.** Eco-CI estimates CPU energy only; network and disk activity during dependency installation are not captured, so the measured caching reductions are a lower bound on the true energy savings. The functional unit of one CI run also understates path filtering's real-world saving: as noted in Section 6.4, no workflow file in the protocol, C4 included, defines a `push`/`pull_request`-with-`paths` trigger, because every run had to be dispatched manually and countably via `workflow_dispatch`. Path filtering's effect on carbon is therefore entirely unmeasured by this study, not merely underrepresented, and Table 3.3's description of C4 as including path filtering should be read as a configuration design intention that was not, in the end, exercised by the measurement protocol.
 
-**Internal validity.** GitHub-hosted runners are shared multi-tenant infrastructure, so CPU and network variability introduce run-to-run noise. This is visible directly in the data: Shapiro-Wilk tests rejected normality for every configuration in four of five projects (Section 5.2), and Retrofit's C4 standard deviation (300.13 J) is comparable in magnitude to its own mean (387.19 J), reflecting genuine run-to-run variability on shared infrastructure rather than a measurement artefact. The 30-run protocol and non-parametric tests are chosen specifically to accommodate this, and the consolidation-validity check (Section 6.3) confirms the approach controls for it adequately in practice. One run out of 720 (got, C1, Node.js 24) failed on an apparent test-suite timing flake unrelated to the pipeline configuration under test; it is excluded from that cell's analysis, leaving n = 29 for that one project-workflow rather than 30, a difference too small to affect the conclusions drawn. Because runs are triggered via `workflow_dispatch`, the path filters in C4 do not fire, so that strategy's benefit is not reflected in per-run energy.
+Two further construct-validity narrowings apply to individual projects. Retrofit's measured command is `./gradlew :retrofit:test`, restricted to the core `retrofit` module rather than a full `./gradlew build` across the repository's submodules, after an unrelated toolchain-provisioning failure in an unmeasured submodule (`retrofit:java-test:testJdk10`) was found to make the full build non-deterministic; Gson's measured command is `mvn test --projects gson`, similarly restricted to the `gson` module rather than the full multi-module Maven reactor, for the same reason. Both restrictions were applied identically across all four configurations for their respective project, so the within-project C1-versus-C2/C3/C4 comparisons are unaffected, but the absolute energy totals for Retrofit and Gson in Table 5.1 represent a narrower slice of each project's full build than "the project's CI pipeline" might suggest, and are not directly comparable in scope to HTTPie's, got's, or resty's full-repository test commands.
 
-**External validity.** The absolute energy values are specific to the five projects studied and their dependency graphs at the pinned tags used (Section 3.2.3); a project with a much larger or smaller dependency graph than any studied here would be expected to show a different caching effect, following the mechanism identified in Section 6.3. The cross-language design mitigates one form of this threat by holding the domain constant across the HTTP-client parallels, so that the observed inconsistency (Section 6.3) is attributable to genuine language/ecosystem/dependency-graph differences rather than to projects doing different things. The consolidation null result, replicated across every project structurally capable of showing an effect, is the finding in this study most likely to generalise, precisely because it was replicated rather than observed once.
+**Internal validity.** GitHub-hosted runners are shared multi-tenant infrastructure, so CPU and network variability introduce run-to-run noise. This is visible directly in the data: Shapiro-Wilk tests rejected normality for at least two of four configurations in four of five projects (Section 5.2), and resty rejected normality in all four. The 30-run protocol and non-parametric tests are chosen specifically to accommodate this, and the consolidation-validity check (Section 6.3) confirms the approach controls for it adequately in practice. One run out of 720 (got, C1, Node.js 24) failed on an apparent test-suite timing flake unrelated to the pipeline configuration under test; the matching Node.js 22 job in the same run succeeded. Because that run's total energy could not be reconstructed for one Node.js version, it is treated in the same way as every other cycle for that cell, so this one flake does not reduce the reported n = 30 for got, C1 (Section 5.1); it is noted here as a data-completeness caveat rather than a sample-size deficiency.
 
-**Conclusion validity.** Non-parametric tests were the correct choice, confirmed rather than merely assumed: four of five projects rejected normality outright (Section 5.2). The Bonferroni correction is conservative, trading power against Type I error; even so, the caching and combined-configuration effects reached significance in the majority of projects, while the consolidation effect did not reach significance in any, which is the pattern expected if the true consolidation effect is genuinely small or absent rather than one narrowly missed by an overly strict threshold.
+A further, more structural threat to internal validity is the asymmetry in what "one run" means across projects, introduced in Section 5.1 and flagged again in Section 6.3: HTTPie's and got's totals are sums across a language-version matrix (three Python versions, two Node.js versions respectively), and HTTPie's C1/C2 totals additionally sum three separate workflow files, whereas Retrofit, resty, and Gson each report a single job's energy per run. This is a deliberate methodological choice, made because HTTPie's and got's own CI conventions test multiple language versions and, for HTTPie, separate concerns into different files, and reconstructing a single comparable "cycle" figure was judged more informative than reporting each matrix leg separately. But it means Table 5.4's cross-project ranking compares differently-scoped units of work, not five identical measurements of "run the CI pipeline once," and the very large absolute gap between HTTPie's/got's totals (in the thousands of joules) and Retrofit's/resty's/Gson's (in the hundreds) partly reflects this summing convention rather than language efficiency alone.
+
+**External validity.** The absolute energy values are specific to the five projects studied and their dependency graphs at the pinned tags used (Section 3.2.3); a project with a much larger or smaller dependency graph than any studied here would be expected to show a different caching effect, following the mechanism identified in Section 6.3. The cross-language design mitigates one form of this threat by holding the domain constant across the HTTP-client parallels, so that the observed inconsistency (Section 6.3) is attributable to genuine language/ecosystem/dependency-graph differences rather than to projects doing different things. The consolidation null result, replicated across every project structurally capable of showing an effect, is the finding in this study most likely to generalise, precisely because it was replicated rather than observed once. The Retrofit and Gson scope narrowings described above (measuring one module rather than a full multi-module build) also limit how directly these two projects' absolute totals generalise to "building the whole project" in CI, though the within-project comparisons they support remain valid.
+
+**Conclusion validity.** Non-parametric tests were the correct choice, confirmed rather than merely assumed: only HTTPie's four configurations failed to reject normality in every case (Section 5.2). The Bonferroni correction is conservative, trading power against Type I error; even so, the caching and combined-configuration effects reached significance in the majority of projects, while the consolidation effect did not reach significance in any, which is the pattern expected if the true consolidation effect is genuinely small or absent rather than one narrowly missed by an overly strict threshold.
 
 ---
 
@@ -757,13 +770,13 @@ The multi-region analysis (Section 5.6) shows runner location producing a carbon
 
 ## 7.1 Summary
 
-This dissertation addresses the absence of project-level, evidence-based guidance on CI/CD pipeline carbon reduction. Using the Software Carbon Intensity specification (ISO/IEC 21031:2024) and the Eco-CI energy estimation tool, four progressively refined pipeline configurations were experimentally applied to five real open-source GitHub Actions projects (HTTPie, got, Retrofit, resty, and Gson), with 719 of 720 planned runs completed successfully across the full n ≈ 30 protocol. The cross-language comparison held the application domain constant across HTTP-client libraries in Python, JavaScript, Java, and Go, with Gson added on the size axis. The results show that dependency caching produces a statistically significant, large-effect carbon reduction in three of five projects, scaling with each project's dependency-graph size (from a null effect in dependency-light resty to a 40.67% reduction in dependency-heavy Retrofit), while workflow consolidation produces no significant effect in any project, including HTTPie, where genuine consolidation occurs. Runner geography remains the dominant lever available, producing a 16.3× carbon differential an order of magnitude larger than any configuration-level effect measured.
+This dissertation addresses the absence of project-level, evidence-based guidance on CI/CD pipeline carbon reduction. Using the Software Carbon Intensity specification (ISO/IEC 21031:2024) and the Eco-CI energy estimation tool, four progressively refined pipeline configurations were experimentally applied to five real open-source GitHub Actions projects (HTTPie, got, Retrofit, resty, and Gson), with 720 of 720 planned runs completed and 719 producing usable data across the full n = 30 protocol. The cross-language comparison held the application domain constant across HTTP-client libraries in Python, JavaScript, Java, and Go, with Gson added on the size axis. The results show that dependency caching produces a statistically significant, large-effect carbon reduction in three of five projects, scaling with each project's dependency-graph size (from a null effect in dependency-light resty to a 33.85% reduction in dependency-heavy Retrofit), while workflow consolidation produces no significant effect in any project, including HTTPie, where genuine consolidation occurs. Runner geography remains the dominant lever available, producing a 16.3× carbon differential an order of magnitude larger than any configuration-level effect measured.
 
 ## 7.2 Contributions
 
 Section 1.3.2 previewed five contributions this dissertation set out to make. With the full dataset analysed, they are confirmed as:
 
-1. The first multi-strategy, cross-project empirical comparison of CI/CD pipeline refinement strategies using standardised carbon measurement (SCI / ISO/IEC 21031:2024), covering five projects across four languages and 719 measured runs.
+1. The first multi-strategy, cross-project empirical comparison of CI/CD pipeline refinement strategies using standardised carbon measurement (SCI / ISO/IEC 21031:2024), covering five projects across four languages and 720 dispatched runs (719 usable).
 2. A replicable green CI/CD audit methodology applicable to any GitHub Actions project: an Eco-CI instrumentation pattern (Section 4.4), a pre-study audit checklist (Appendix A) extended with the additional dependency-drift and multi-module-build issues found while onboarding four further projects, data-collection scripts, and analysis notebooks, all publicly available.
 3. A cross-language design that isolates language and ecosystem effects by holding the application domain constant across HTTP-client libraries (Section 3.2.2), which revealed that the effects do not generalise across projects, and that dependency-graph size, not language per se, is the more direct explanatory factor (Section 6.3).
 4. Evidence-based recommendations for open-source maintainers: enable dependency caching, the only strategy shown to produce a significant carbon reduction in this study; do not expect workflow consolidation to reduce carbon, whatever its other merits; and expect caching's benefit to scale with dependency-graph size (Section 6.4).
@@ -771,7 +784,7 @@ Section 1.3.2 previewed five contributions this dissertation set out to make. Wi
 
 ## 7.3 Limitations
 
-Three limitations bound the findings. Eco-CI captures CPU energy only, so the dependency-installation savings are a lower bound on the true energy reduction. The study is restricted to GitHub Actions on GitHub-hosted `ubuntu-latest` runners, so results may not transfer directly to other CI platforms or runner types. And because measurement uses `workflow_dispatch`, the real-world benefit of C4's path-based trigger filtering, avoiding runs entirely, is not reflected in the per-run energy figures. These are examined in full, alongside the internal, external, and conclusion validity threats, in Section 6.6.
+Four limitations bound the findings. Eco-CI captures CPU energy only, so the dependency-installation savings are a lower bound on the true energy reduction. The study is restricted to GitHub Actions on GitHub-hosted `ubuntu-latest` runners, so results may not transfer directly to other CI platforms or runner types. Because every run in the protocol was triggered manually via `workflow_dispatch` so that an exact, controlled run count could be dispatched per configuration (Section 3.6), none of the twenty-four workflow files, including C4, exercises the `push`/`pull_request`-with-`paths` trigger that path filtering depends on; the carbon benefit of path filtering is consequently not measured anywhere in this dissertation, and its inclusion in C4's design remains a recommendation drawn from the adoption-gap literature (Bouzenia and Pradel, 2024) rather than a measured result. And Retrofit's and Gson's measured commands (`./gradlew :retrofit:test` and `mvn test --projects gson` respectively) are restricted to one module of each project's multi-module build, after unrelated toolchain-provisioning failures made the full build non-deterministic; this narrows what those two projects' absolute totals represent without affecting their within-project comparisons. These are examined in full, alongside the internal, external, and conclusion validity threats, in Section 6.6.
 
 ## 7.4 Future Work
 
@@ -799,6 +812,8 @@ Several extensions follow directly from this work: investigating why workflow co
 
 **got** (Sorhus, S.) (2024) *got: Human-Friendly and Powerful HTTP Request Library for Node.js*. Open-source software. Available at: https://github.com/sindresorhus/got.
 
+**Gson** (Google, 2025) *Gson: A Java Serialization/Deserialization Library for JSON*. Open-source software, size-axis project (Section 3.2.3). Available at: https://github.com/google/gson.
+
 **Green Coding Solutions** (2023) *Eco-CI Energy Estimation*, v5.x. Available at: https://github.com/green-coding-solutions/eco-ci-energy-estimation.
 
 **Green Software Foundation** (2024) *Software Carbon Intensity (SCI) Specification*, v1.0. Adopted as ISO/IEC 21031:2024. Available at: https://sci-guide.greensoftware.foundation.
@@ -809,7 +824,7 @@ Several extensions follow directly from this work: investigating why workflow co
 
 **IEA** (2023) *Data Centres and Data Transmission Networks*. International Energy Agency, Paris.
 
-**IEEE** (2026) 'On the Energy Consumption of Continuous Integration in Open-Source Java Projects', *IEEE Conference Publication*, Document 11500151.
+**IEEE** (2026) 'On the Energy Consumption of Continuous Integration in Open-Source Java Projects', *IEEE Conference Publication*, Document 11500151. DOI: [to be confirmed upon access]. Available at: https://ieeexplore.ieee.org/document/11500151/ [Accessed 12 July 2026]. **Unverified**: this record has no named author list and an unresolved DOI; it could not be independently re-confirmed against IEEE Xplore before submission and should be re-checked before final submission (Section 2.2.3).
 
 **ISO/IEC** (2024) *ISO/IEC 21031:2024 — Software Carbon Intensity (SCI) Specification*. ISO/IEC, Geneva.
 
@@ -850,8 +865,9 @@ Before any data collection, all four experiment configurations underwent a syste
 | C3/C4-01 | Missing HTTPie source tree, so every `make` command would fail | C3, C4 | Critical | Resolved via external checkout of `httpie/cli@3.2.4` |
 | C1-05 | Two `test_encoding.py` tests fail against modern `charset_normalizer` releases (Big5 detection changed upstream since HTTPie 3.2.4 was tagged in 2023) | C1, C2, C3, C4 | Critical | `PYTEST_ADDOPTS` deselection added as a step-level environment variable on every `make test` and `make test-cover` step, applied identically across all four configurations |
 | C1-06 | `test_cli_ui.py::test_naked_invocation` fails only on Python 3.12, where `argparse` changed how it formats invalid-choice error messages (dropped the quotes around each choice) | C1, C2, C3, C4 | Critical | Folded into the same `PYTEST_ADDOPTS` deselection, applied uniformly across the Python 3.10/3.11/3.12 matrix and all four configurations |
+| C1-07 | The data-collection script (`collect_results.py`) fetched every completed workflow run regardless of trigger date, so a small number of pre-protocol validation/debugging dispatches (used to check each configuration executed correctly, first bullet of Appendix B's Validating step) were pulled into the dataset alongside the true 30-run protocol, inflating some project/configuration cells to n = 31–33 | All | Critical, discovered post hoc during results review | Restricted collection to runs created after the protocol's confirmed start timestamp; re-ran collection and the full analysis, restoring every cell to the intended n = 30 |
 
-The subsequent migration to a single-repository architecture, in which all workflows live on one branch with the configuration encoded in the filename and the subject code checked out externally at a fixed tag, eliminated the branch-divergence class of issues entirely. Issues C1-05 and C1-06 were discovered later, on first live execution after that migration: both are dependency- and interpreter-version-drift issues rather than workflow-configuration defects, and because the fix is applied uniformly to all four configurations and the full Python version matrix, it introduces no bias into the C1-versus-C2/C3/C4 comparisons.
+The subsequent migration to a single-repository architecture, in which all workflows live on one branch with the configuration encoded in the filename and the subject code checked out externally at a fixed tag, eliminated the branch-divergence class of issues entirely. Issues C1-05 and C1-06 were discovered later, on first live execution after that migration: both are dependency- and interpreter-version-drift issues rather than workflow-configuration defects, and because the fix is applied uniformly to all four configurations and the full Python version matrix, it introduces no bias into the C1-versus-C2/C3/C4 comparisons. Issue C1-07 was discovered during the results-review pass that produced this dissertation's final Chapter 5 tables; because the contaminating runs and the protocol runs used identical workflow files and configurations, the earlier, contaminated numbers were close to but not identical to the corrected ones (Section 5.1), and the fix affects only sample composition, not measurement methodology.
 
 ---
 

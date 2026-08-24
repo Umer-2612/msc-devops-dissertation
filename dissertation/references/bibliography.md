@@ -66,7 +66,7 @@ Online sources constitute less than 50% of the total reference list, in accordan
 
 **IEA** (2023) *Data Centres and Data Transmission Networks*. International Energy Agency, Paris. Available at: https://www.iea.org/energy-system/buildings/data-centres-and-data-transmission-networks [Accessed 15 June 2026].
 
-**IEEE** (2026) 'On the Energy Consumption of Continuous Integration in Open-Source Java Projects', *IEEE Conference Publication*, Document 11500151. DOI: [to be confirmed upon access]. Available at: https://ieeexplore.ieee.org/document/11500151/ [Accessed 12 July 2026].
+**IEEE** (2026) 'On the Energy Consumption of Continuous Integration in Open-Source Java Projects', *IEEE Conference Publication*, Document 11500151. DOI: [to be confirmed upon access]. Available at: https://ieeexplore.ieee.org/document/11500151/ [Accessed 12 July 2026]. **Unverified**: this record has no named author list and an unresolved DOI; it could not be independently re-confirmed against IEEE Xplore before submission. The findings it reports are used in Section 2.2.3 with an explicit lower-confidence caveat, and this entry should be re-checked against the live IEEE Xplore record before final submission.
 
 **ISO/IEC** (2024) *ISO/IEC 21031:2024 — Software Carbon Intensity (SCI) Specification*. International Organisation for Standardisation / International Electrotechnical Commission, Geneva.
 

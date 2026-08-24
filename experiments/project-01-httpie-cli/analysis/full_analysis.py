@@ -61,6 +61,31 @@ def run_totals_for(project, config):
     return np.sum(aligned, axis=0)
 
 
+def stage_means_for(project, config):
+    """Return per-stage mean energy (J), reconstructed on the same per-cycle
+    basis as run_totals_for(): a stage occurring multiple times within one
+    run_id (e.g. a Python-version matrix) is summed first, then multiple
+    workflow files contributing to one logical cycle (HTTPie C1/C2) have
+    their per-file per-stage means SUMMED, not pooled, since each file's
+    checkout/dependency-installation is a genuinely separate occurrence
+    within one cycle, not a repeated sample of the same event. This must
+    sum to the same total that run_totals_for() reports for the same cell."""
+    sub = df[(df['project'] == project) & (df['config'] == config)]
+    workflows = sorted(sub['workflow'].unique())
+
+    if len(workflows) == 1:
+        per_run_stage = sub.groupby(['run_id', 'stage'])['energy_joules'].sum().reset_index()
+        return per_run_stage.groupby('stage')['energy_joules'].mean()
+
+    total = pd.Series(dtype=float)
+    for wf in workflows:
+        wf_sub = sub[sub['workflow'] == wf]
+        per_run_stage = wf_sub.groupby(['run_id', 'stage'])['energy_joules'].sum().reset_index()
+        stage_mean = per_run_stage.groupby('stage')['energy_joules'].mean()
+        total = total.add(stage_mean, fill_value=0)
+    return total
+
+
 print("=" * 90)
 print("TABLE 5.x: Descriptive statistics, total energy per CI run (all stages combined)")
 print("=" * 90)
@@ -74,6 +99,14 @@ for project in PROJECT_ORDER:
         descriptive[(project, config)] = totals
         print(f"  {config}: n={len(totals):2d}  mean={totals.mean():9.2f} J  "
               f"median={np.median(totals):9.2f} J  sd={totals.std(ddof=1):8.2f} J")
+
+print("\n" + "=" * 90)
+print("TABLE 5.2: HTTPie per-stage energy means, by configuration (must sum to Table 5.1 totals)")
+print("=" * 90)
+for config in CONFIG_ORDER:
+    means = stage_means_for('httpie', config)
+    print(f"  {config} (sum={means.sum():8.2f} J): " +
+          "  ".join(f"{stage}={val:.2f}" for stage, val in means.items()))
 
 print("\n" + "=" * 90)
 print("SHAPIRO-WILK NORMALITY TESTS (total energy per run, per project/config)")

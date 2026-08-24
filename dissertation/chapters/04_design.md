@@ -38,7 +38,7 @@ This section gives the exact, per-configuration implementation for the anchor pr
 
 **C3 — Consolidation.** The three workflow files are merged into a single `ci-consolidated.yml`, restructured as a sequential job chain: lint, then test, then coverage. This removes two of the three redundant runner-provisioning and checkout-and-install cycles while keeping the total amount of work identical to C1, isolating the consolidation effect from any change in what is actually executed.
 
-**C4 — Combined.** The merged structure from C3, with caching from C2 applied throughout, plus path-based trigger filters defined on the workflow's `on:` block so that pushes touching only documentation or non-source paths do not trigger a run at all.
+**C4 — Combined.** The merged structure from C3, with caching from C2 applied throughout. Path-based trigger filtering, restricting a `push`/`pull_request` trigger so that changes touching only documentation or non-source paths do not run the pipeline at all, was part of C4's original design intent but is not present in any workflow file used in this study: every file, C4 included, is triggered exclusively via `workflow_dispatch` so that the protocol can dispatch an exact, controlled number of runs per configuration (Section 3.6). Consequently C4's measured energy reflects caching and consolidation combined, not path filtering, which remains unmeasured (Section 6.6).
 
 Table 4.1 summarises the cross-ecosystem adaptation of the caching mechanism, extending Section 3.2.5.
 
@@ -93,7 +93,7 @@ Energy is measured at the following stage boundaries, labelled consistently acro
 
 > **Provenance note.** The figures used in this worked example were collected during early pilot instrumentation testing of the C1 and C2 configurations, before the validated 30-run data-collection protocol (Section 3.5) was executed to completion. They are used here only to demonstrate the calculation mechanism concretely; they are not presented as a statistically validated result, and they are not repeated in Chapter 5 as evidence for RQ1–RQ3.
 
-Eco-CI derives energy in three steps. First, it samples CPU utilisation at fixed intervals across the measurement window using the runner's kernel statistics. Second, it converts each utilisation reading into a power figure using a regression model trained on the SPECpower benchmark dataset (SPECpower_ssj2008), parameterised with the runner's machine profile and scaled down to the share of that power attributable to the job's allocated vCPUs — which is why reported power values are a few watts rather than the full draw of the host. Third, it integrates power over elapsed time: for each labelled stage, energy in joules is the average estimated power in watts multiplied by the stage duration in seconds.
+Eco-CI derives energy in three steps. First, it samples CPU utilisation at fixed intervals across the measurement window using the runner's kernel statistics. Second, it converts each utilisation reading into a power figure using a regression model trained on the SPECpower benchmark dataset (SPECpower_ssj2008), parameterised with the runner's machine profile and scaled down to the share of that power attributable to the job's allocated vCPUs, which is why reported power values are a few watts rather than the full draw of the host. Third, it integrates power over elapsed time: for each labelled stage, energy in joules is the average estimated power in watts multiplied by the stage duration in seconds.
 
 Applied to the pilot C1 code-style job, the lint stage recorded an average CPU utilisation of 25.29%, which the model mapped to 4.07 W for the runner profile, over a duration of 17.26 seconds:
 
@@ -130,3 +130,4 @@ flowchart LR
 Each stage in this pipeline is deterministic and scripted, so the same raw artifacts can be re-collected and re-analysed independently, which is the basis of the reproducibility claim in Section 3.8 and Appendix B.
 
 ---
+

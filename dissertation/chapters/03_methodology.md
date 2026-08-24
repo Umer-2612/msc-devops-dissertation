@@ -77,11 +77,11 @@ Four configurations are evaluated per project, summarised in Table 3.3. Each rep
 | **C1 — Baseline** | Project's existing separate workflow files | No | None |
 | **C2 — Caching** | Same files as C1 | Yes (idiomatic per ecosystem) | None |
 | **C3 — Consolidation** | Separate workflows merged into one | No | None |
-| **C4 — Combined** | Merged workflow + caching | Yes | Path filters defined |
+| **C4 — Combined** | Merged workflow + caching | Yes | Designed for, not exercised in measurement (see below) |
 
 *Table 3.3: The four experimental configurations and what changes between them.*
 
-C1 establishes the baseline energy consumption of the unmodified pipeline, with only Eco-CI instrumentation added. C2 isolates dependency caching. C3 isolates workflow consolidation, merging the separate workflow files into a single sequential chain while keeping the total work identical, so that any energy difference from C1 is attributable to eliminating duplicated runner-provisioning overhead rather than to doing less work. C4 tests the combined effect of all three strategies. Path-based trigger filtering is defined as part of the combined configuration, but because all research runs are triggered manually via `workflow_dispatch` against a fixed external ref, the path filters do not fire during measurement; their real-world benefit, preventing runs entirely when only documentation changes, is treated as a construct-validity consideration rather than captured in per-run energy (Section 6.6). The exact per-project, per-ecosystem implementation of each configuration, including the specific caching keys and merge structure used for HTTPie, is presented in Chapter 4.
+C1 establishes the baseline energy consumption of the unmodified pipeline, with only Eco-CI instrumentation added. C2 isolates dependency caching. C3 isolates workflow consolidation, merging the separate workflow files into a single sequential chain while keeping the total work identical, so that any energy difference from C1 is attributable to eliminating duplicated runner-provisioning overhead rather than to doing less work. C4 tests the combined effect of caching and consolidation together. Path-based trigger filtering was part of C4's original design intent, but every workflow file in this study, C4 included, is triggered exclusively via `workflow_dispatch` rather than `push`/`pull_request`, a deliberate choice that lets the protocol dispatch an exact, controlled count of runs per configuration (Section 3.6). None of the twenty-four workflow files therefore defines a `paths`/`paths-ignore` filter on an actual push trigger, so path filtering's effect on carbon is not exercised or measured anywhere in this study; C4's measured energy reflects only caching plus consolidation. This gap is treated as a construct-validity limitation, not a minor omission (Section 6.6), and the recommendation to adopt path filtering rests on the adoption-gap evidence in Bouzenia and Pradel (2024) rather than on measurement performed here. The exact per-project, per-ecosystem implementation of each configuration, including the specific caching keys and merge structure used for HTTPie, is presented in Chapter 4.
 
 ## 3.4 Instrumentation: Eco-CI Integration
 
@@ -100,7 +100,7 @@ Each workflow is instrumented with the Eco-CI Energy Estimation tool (`green-cod
 5. After each run completes, Eco-CI artifacts are automatically uploaded to the repository's Actions artifact store.
 6. A collection script queries the GitHub Actions API, downloads all Eco-CI artifacts, and consolidates measurements into a single dataset.
 
-The dataset schema is: `run_id`, `config`, `workflow`, `stage`, `energy_joules`, `duration_seconds`, `timestamp`, `language_version`. The full operational procedure is given in Appendix B.
+The dataset schema is: `run_id`, `project`, `config`, `workflow`, `stage`, `energy_joules`, `duration_seconds`, `timestamp`, `python_version` (the last column records the interpreter or runtime version under test where a language-version matrix applies, and is blank otherwise). The full operational procedure is given in Appendix B.
 
 ## 3.6 Carbon Calculation: SCI Framework
 
@@ -121,3 +121,4 @@ The statistical approach (normality testing, Wilcoxon signed-rank comparisons, B
 All projects studied are public open-source repositories licensed for modification. No private data, user data, or personally identifiable information is involved. All experiment code, raw data, and analysis notebooks are published in the replication package at https://github.com/Umer-2612/msc-devops-dissertation. The repository includes instructions for reproducing all measurements via `workflow_dispatch`, making the study independently verifiable.
 
 ---
+
