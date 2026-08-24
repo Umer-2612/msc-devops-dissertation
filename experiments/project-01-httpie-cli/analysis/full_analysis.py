@@ -173,3 +173,22 @@ for project in PROJECT_ORDER:
     r = wilcoxon_results.get((project, 'C3'))
     if r:
         print(f"  {project:10s}: {r['pct']:+7.2f}%  cliffs_d={r['d']:+.4f} ({r['effect']:10s})  sig={'YES' if r['sig'] else 'no'}")
+
+print("\n" + "=" * 90)
+print("ROBUSTNESS CHECK: Mann-Whitney U (unpaired) vs Wilcoxon (ordinal-paired), does significance flip?")
+print("=" * 90)
+for project in PROJECT_ORDER:
+    c1 = descriptive.get((project, 'C1'))
+    if c1 is None:
+        continue
+    for config in ['C2', 'C3', 'C4']:
+        cx = descriptive.get((project, config))
+        if cx is None:
+            continue
+        mw_stat, mw_p = stats.mannwhitneyu(c1, cx, alternative='two-sided')
+        wilcoxon_r = wilcoxon_results.get((project, config))
+        wilcoxon_sig = wilcoxon_r['sig'] if wilcoxon_r else None
+        mw_sig = mw_p < BONFERRONI_ALPHA
+        flip = "FLIP" if (wilcoxon_sig != mw_sig) else "same"
+        print(f"  {project:10s} {config} vs C1: wilcoxon_p={wilcoxon_r['p']:.5f} (sig={wilcoxon_sig})  "
+              f"mannwhitney_p={mw_p:.5f} (sig={mw_sig})  [{flip}]")
