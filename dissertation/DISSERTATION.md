@@ -55,7 +55,7 @@ Within this broader cloud infrastructure footprint, Continuous Integration and C
 
 At ecosystem scale, Saavedra, Mendes and Ferreira (2025) estimate the carbon footprint of the entire GitHub Actions ecosystem in 2024 at between 150.5 and 994.9 metric tonnes of CO₂ equivalent (MTCO₂e), with a most likely scenario of 456.9 MTCO₂e. This is the equivalent of the annual electricity consumption of thousands of homes, produced by automated pipelines that most developers have never audited for environmental efficiency.
 
-Taken together, these figures establish that CI/CD is not a peripheral cost of software delivery but a growing and largely invisible line item in the environmental footprint of the software industry, one that scales directly with how often, and how wastefully, pipelines are triggered. That framing motivates the next question: not whether CI/CD carries an energy cost, but why that cost is so much higher than the work being performed requires.
+These figures establish that CI/CD is not a peripheral cost of software delivery but a growing and largely invisible line item in the environmental footprint of the software industry, one that scales directly with how often, and how wastefully, pipelines are triggered. That framing motivates the next question: not whether CI/CD carries an energy cost, but why that cost is so much higher than the work being performed requires.
 
 ### 1.2.2 Systemic Inefficiency in CI/CD Configuration
 
@@ -170,7 +170,7 @@ This work provides important empirical grounding for the aggregate energy footpr
 
 ### 2.2.3 Energy Consumption of Continuous Integration in Java Projects
 
-A 2026 IEEE study, "On the Energy Consumption of Continuous Integration in Open-Source Java Projects" (Document 11500151), provides the first comprehensive baseline of CI energy use through a large-scale analysis of 204 open-source Java projects, measuring energy consumption under Maven and Gradle build systems with repeated measurements, and reports dependency caching cutting CI energy by 30% on average and by over 90% in the best cases — the single strongest empirically validated intervention found anywhere in this review. This citation's bibliographic record could not be independently re-verified against IEEE Xplore at the time of writing (no named author list and an unresolved DOI, noted in the References list); the findings summarised here should accordingly be treated with somewhat lower confidence than the other, fully author-attributed sources in this review, and the reader is directed to confirm the record directly at the DOI/URL given in the bibliography before relying on the specific percentages cited.
+A 2026 IEEE study, "On the Energy Consumption of Continuous Integration in Open-Source Java Projects" (Document 11500151), provides the first comprehensive baseline of CI energy use through a large-scale analysis of 204 open-source Java projects, measuring energy consumption under Maven and Gradle build systems with repeated measurements, and reports dependency caching cutting CI energy by 30% on average and by over 90% in the best cases. That is the single strongest empirically validated intervention found anywhere in this review. This citation's bibliographic record could not be independently re-verified against IEEE Xplore at the time of writing (no named author list and an unresolved DOI, noted in the References list); the findings summarised here should accordingly be treated with somewhat lower confidence than the other, fully author-attributed sources in this review, and the reader is directed to confirm the record directly at the DOI/URL given in the bibliography before relying on the specific percentages cited.
 
 The study finds that energy use is highly skewed: while most projects consume energy modestly, a minority of CI-intensive systems reach annual CI energy footprints of hundreds of kilowatt-hours, comparable to a quarter of an average EU household's electricity use.
 
@@ -204,7 +204,7 @@ This paper demonstrates the practical application of Eco-CI as a measurement ins
 
 ### 2.3.3 Energy Measurement in Containerised CI/CD
 
-Ehlers et al. (2026), in "PPTAM𝜂: Energy Aware CI/CD Pipeline for Container Based Applications," present PPTAM𝜂, an automated pipeline that integrates power and energy measurement into GitLab CI for containerised API systems. Per-commit energy visibility turns out to be achievable with direct hardware power probes on self-hosted infrastructure — though that fidelity comes at the cost of portability to the shared, GitHub-hosted runners most open-source projects actually use.
+Ehlers et al. (2026), in "PPTAM𝜂: Energy Aware CI/CD Pipeline for Container Based Applications," present PPTAM𝜂, an automated pipeline that integrates power and energy measurement into GitLab CI for containerised API systems. Per-commit energy visibility turns out to be achievable with direct hardware power probes on self-hosted infrastructure, though that fidelity comes at the cost of portability to the shared, GitHub-hosted runners most open-source projects actually use.
 
 The system coordinates load generation, container monitoring, and hardware power probes to collect comparable metrics at each commit. The pipeline makes energy visible to developers on a per-commit basis, enabling version comparison and trend analysis. Their evaluation on a JWT-authenticated API across four commits demonstrates the methodology's practical applicability.
 
@@ -214,7 +214,7 @@ PPTAM𝜂 is architecturally distinct from this dissertation's approach: it targ
 
 ### 2.3.4 Why Scale Matters
 
-Two findings from this section, taken together, motivate a design decision made in Chapter 3. De Medeiros et al. (2025) find that project size does not strongly predict per-task energy consumption within Java projects (Section 2.3.1), while Alves et al. (2024) and the IEEE (2026) study both find that a small minority of CI-intensive projects account for a disproportionate share of aggregate CI energy (Sections 2.2.2 to 2.2.3). Read together, these results suggest that the relationship between project scale and CI carbon footprint is not linear and cannot be assumed from a single small anchor project: a larger, more CI-intensive project might behave like the anchor, or it might belong to the disproportionate minority the aggregate studies describe. This is the literature-grounded reasoning behind including a larger, differently-scoped project on the size axis of this study's design (Section 3.2.2), rather than restricting the cross-project comparison to same-size HTTP-client libraries alone.
+Two findings from this section motivate a design decision made in Chapter 3. De Medeiros et al. (2025) find that project size does not strongly predict per-task energy consumption within Java projects (Section 2.3.1), while Alves et al. (2024) and the IEEE (2026) study both find that a small minority of CI-intensive projects account for a disproportionate share of aggregate CI energy (Sections 2.2.2 to 2.2.3). These results suggest that the relationship between project scale and CI carbon footprint is not linear and cannot be assumed from a single small anchor project: a larger, more CI-intensive project might behave like the anchor, or it might belong to the disproportionate minority the aggregate studies describe. This is the literature-grounded reasoning behind including a larger, differently-scoped project on the size axis of this study's design (Section 3.2.2), rather than restricting the cross-project comparison to same-size HTTP-client libraries alone.
 
 ## 2.4 Carbon-Aware Scheduling and Infrastructure Strategies
 
@@ -232,15 +232,15 @@ These spatial and temporal scheduling strategies address the carbon intensity of
 
 ### 2.5.1 The Software Carbon Intensity Standard
 
-The Software Carbon Intensity specification, published by the Green Software Foundation in 2022 and subsequently adopted as ISO/IEC 21031:2024, defines a standardised, reproducible metric for expressing the carbon intensity of a unit of software functionality (Green Software Foundation, 2024). Its main value for this study is that SCI gives a comparison metric that cannot be gamed by offsets — though the specification itself provides no CI/CD-specific guidance.
+The Software Carbon Intensity specification, published by the Green Software Foundation in 2022 and subsequently adopted as ISO/IEC 21031:2024, defines a standardised, reproducible metric for expressing the carbon intensity of a unit of software functionality (Green Software Foundation, 2024). Its main value for this study is that SCI gives a comparison metric that cannot be gamed by offsets, though the specification itself provides no CI/CD-specific guidance.
 
 The formula SCI = ((E × I) + M) / R expresses operational energy (E), grid carbon intensity (I), embodied hardware carbon (M), and a functional unit (R). Unlike absolute carbon footprint metrics, SCI cannot be reduced to zero through offsets or neutralisation credits; only genuine efficiency improvements reduce the score. This property makes it appropriate for comparing pipeline configurations, as it is insensitive to accounting choices.
 
-The specification provides the measurement framework for this dissertation, but it offers no CI/CD-specific guidance and no empirical data of its own on what configuration changes actually reduce SCI in practice — supplying that data is the empirical work Chapters 3 to 5 do.
+The specification provides the measurement framework for this dissertation, but it offers no CI/CD-specific guidance and no empirical data of its own on what configuration changes actually reduce SCI in practice. Supplying that data is the empirical work Chapters 3 to 5 do.
 
 ### 2.5.2 Eco-CI Energy Estimation
 
-Eco-CI (Green Coding Solutions, v5.x) is a GitHub Actions action that estimates per-stage energy consumption inside CI workflows without requiring hardware instrumentation (Green Coding Solutions, 2023). It is, in practice, the only workable way to get per-stage energy figures on shared GitHub-hosted runners — at the cost of being a model-based estimate rather than a hardware measurement.
+Eco-CI (Green Coding Solutions, v5.x) is a GitHub Actions action that estimates per-stage energy consumption inside CI workflows without requiring hardware instrumentation (Green Coding Solutions, 2023). It is, in practice, the only workable way to get per-stage energy figures on shared GitHub-hosted runners, at the cost of being a model-based estimate rather than a hardware measurement.
 
 It uses a machine learning model trained on the SPECpower benchmark database to map CPU utilisation to power draw, integrating over elapsed time to produce per-stage energy values in joules. The model is appropriate for GitHub Actions `ubuntu-latest` runners, which run on Intel Xeon Platinum processors on Azure infrastructure, a hardware configuration well characterised in the SPECpower corpus.
 
@@ -248,7 +248,7 @@ Any systematic model bias affects all four experiment configurations equally and
 
 ### 2.5.3 GitHub Actions Resource Usage Analysis
 
-Bouzenia and Pradel (2024), in "Resource Usage and Optimization Opportunities in Workflows of GitHub Actions," provide the most comprehensive prior empirical study of resource usage in GitHub Actions, finding that caching and path filtering are both under-adopted relative to their availability — direct evidence that maintainers lack the guidance this dissertation aims to provide.
+Bouzenia and Pradel (2024), in "Resource Usage and Optimization Opportunities in Workflows of GitHub Actions," provide the most comprehensive prior empirical study of resource usage in GitHub Actions, finding that caching and path filtering are both under-adopted relative to their availability, direct evidence that maintainers lack the guidance this dissertation aims to provide.
 
 Analysing 952 repositories, 1.3 million workflow runs, and 3.7 million jobs, they find that 91.2% of resources are consumed by testing and building. They document adoption rates for six optimisation strategies: caching (32.9% adoption), fail-fast (75.9%), cancel-in-progress (10.1%), skip-workflow (9.7%), path filtering (20.7%), and custom timeout (14.0%), and estimate the VM time savings each produces. This study provides the empirical baseline for understanding which strategies practitioners actually use and their relative VM time impact.
 
@@ -258,7 +258,7 @@ Two limitations stand out: the study measures VM time and monetary cost rather t
 
 ### 2.5.4 Systematic Review of Sustainable DevOps
 
-Alamer and Alharbi (2025), in "Sustainable DevOps: A Systematic Literature Review on Reducing Energy Footprint in Continuous Integration and Deployment (CI/CD) Pipelines," conduct a systematic literature review of 50 studies (2020 to 2025) on sustainability in DevOps CI/CD pipelines. Their central conclusion is that the field has moved from hardware profiling to ML-based estimation but still lacks standardised measurement and empirical comparative data — precisely the gap this dissertation targets.
+Alamer and Alharbi (2025), in "Sustainable DevOps: A Systematic Literature Review on Reducing Energy Footprint in Continuous Integration and Deployment (CI/CD) Pipelines," conduct a systematic literature review of 50 studies (2020 to 2025) on sustainability in DevOps CI/CD pipelines. Their central conclusion is that the field has moved from hardware profiling to ML-based estimation but still lacks standardised measurement and empirical comparative data, precisely the gap this dissertation targets.
 
 They identify a methodological shift from hardware-based profiling (RAPL) to ML prediction models, and classify techniques into three categories: carbon-aware scheduling, test-suite optimisation, and lightweight build strategies. The review concludes by identifying the absence of standardised measurement and empirical comparative data as the primary gap in the field. That gap is precisely what this study addresses.
 
@@ -378,10 +378,10 @@ Four configurations are evaluated per project, summarised in Table 3.3. Each rep
 
 | Config | Structure | Dependency cache | Path filters |
 |---|---|---|---|
-| **C1 — Baseline** | Project's existing separate workflow files | No | None |
-| **C2 — Caching** | Same files as C1 | Yes (idiomatic per ecosystem) | None |
-| **C3 — Consolidation** | Separate workflows merged into one | No | None |
-| **C4 — Combined** | Merged workflow + caching | Yes | Designed for, not exercised in measurement (see below) |
+| **C1: Baseline** | Project's existing separate workflow files | No | None |
+| **C2: Caching** | Same files as C1 | Yes (idiomatic per ecosystem) | None |
+| **C3: Consolidation** | Separate workflows merged into one | No | None |
+| **C4: Combined** | Merged workflow + caching | Yes | Designed for, not exercised in measurement (see below) |
 
 *Table 3.3: The four experimental configurations and what changes between them.*
 
@@ -391,7 +391,7 @@ C1 establishes the baseline energy consumption of the unmodified pipeline, with 
 
 GitHub-hosted runners are virtual machines on Microsoft Azure, and the guest environment does not expose hardware energy counters such as Intel RAPL or IPMI power sensors. Measuring energy in joules directly inside the runner is therefore not possible. Eco-CI (Section 2.5.2) was chosen over the alternatives reviewed in Chapter 2 precisely because it works around this constraint without requiring hardware access: rather than reading a physical meter, it estimates energy from processor utilisation, which the guest can read, using a regression model trained on the SPECpower benchmark dataset. This is the only approach among those surveyed in the literature review that is viable on free, shared GitHub-hosted runners, which is the infrastructure the majority of open-source maintainers actually use (Section 2.4).
 
-Two consequences of this choice follow, and both are treated as fixed constraints on interpretation throughout this dissertation. The estimate covers processor energy only, so it excludes network and disk activity and represents a lower bound on the true energy of stages such as dependency installation, which are network-heavy. And because any systematic bias in the model applies identically to all four configurations, it does not distort the relative comparison between them — and relative comparison is what RQ1 actually asks about. Absolute values are treated as estimates throughout; the comparisons between configurations are the load-bearing results. The mechanics of the estimation, and a worked numerical example, are given in Section 4.6.
+Two consequences of this choice follow, and both are treated as fixed constraints on interpretation throughout this dissertation. The estimate covers processor energy only, so it excludes network and disk activity and represents a lower bound on the true energy of stages such as dependency installation, which are network-heavy. And because any systematic bias in the model applies identically to all four configurations, it does not distort the relative comparison between them; relative comparison is what RQ1 actually asks about. Absolute values are treated as estimates throughout; the comparisons between configurations are the load-bearing results. The mechanics of the estimation, and a worked numerical example, are given in Section 4.6.
 
 Each workflow is instrumented with the Eco-CI Energy Estimation tool (`green-coding-solutions/eco-ci-energy-estimation@v5`) at four points in every job: start-measurement at job start, get-measurement at each stage boundary, display-results at job end, and an artifact upload of the resulting JSON. The full instrumentation pattern, including the implementation requirements established during the pre-study audit, is presented in Section 4.4.
 
@@ -442,10 +442,10 @@ flowchart LR
         A["httpie/cli @ 3.2.4 (external checkout, unmodified)"]
     end
 
-    A --> C1["C1 — Baseline\n3 separate workflow files\nno cache, no filters"]
-    A --> C2["C2 — Caching\nsame 3 files + cache: pip"]
-    A --> C3["C3 — Consolidation\n1 merged workflow\nno cache, no filters"]
-    A --> C4["C4 — Combined\n1 merged workflow\n+ cache + path filters"]
+    A --> C1["C1: Baseline\n3 separate workflow files\nno cache, no filters"]
+    A --> C2["C2: Caching\nsame 3 files + cache: pip"]
+    A --> C3["C3: Consolidation\n1 merged workflow\nno cache, no filters"]
+    A --> C4["C4: Combined\n1 merged workflow\n+ cache + path filters"]
 
     C1 --> E1["Eco-CI instrumented\nenergy artifact"]
     C2 --> E2["Eco-CI instrumented\nenergy artifact"]
@@ -460,13 +460,13 @@ Holding the checkout identical across all four branches is what makes the compar
 
 This section gives the exact, per-configuration implementation for the anchor project (HTTPie); the same pattern is applied to each subsequent project, adapted to its ecosystem per the cross-ecosystem considerations in Section 3.2.5.
 
-**C1 — Baseline.** HTTPie's three pre-existing workflow files (`tests.yml`, `code-style.yml`, `coverage.yml`) are instrumented with Eco-CI but otherwise left structurally unchanged: three independent jobs, each provisioning its own runner, checking out the code, and installing dependencies from a cold cache.
+**C1: Baseline.** HTTPie's three pre-existing workflow files (`tests.yml`, `code-style.yml`, `coverage.yml`) are instrumented with Eco-CI but otherwise left structurally unchanged: three independent jobs, each provisioning its own runner, checking out the code, and installing dependencies from a cold cache.
 
-**C2 — Caching.** The same three files as C1, with `cache: pip` added to every `setup-python` step. Because HTTPie declares its dependencies in `setup.cfg` rather than the more common `requirements.txt`, the cache key must be pointed explicitly at the correct file with `cache-dependency-path: setup.cfg` — without this, `actions/setup-python` cannot compute a cache key and caching silently falls back to a permanent cache miss.
+**C2: Caching.** The same three files as C1, with `cache: pip` added to every `setup-python` step. Because HTTPie declares its dependencies in `setup.cfg` rather than the more common `requirements.txt`, the cache key must be pointed explicitly at the correct file with `cache-dependency-path: setup.cfg`. Without this, `actions/setup-python` cannot compute a cache key, and caching silently falls back to a permanent cache miss.
 
-**C3 — Consolidation.** The three workflow files are merged into a single `ci-consolidated.yml`, restructured as a sequential job chain: lint, then test, then coverage. This removes two of the three redundant runner-provisioning and checkout-and-install cycles while keeping the total amount of work identical to C1, isolating the consolidation effect from any change in what is actually executed.
+**C3: Consolidation.** The three workflow files are merged into a single `ci-consolidated.yml`, restructured as a sequential job chain: lint, then test, then coverage. This removes two of the three redundant runner-provisioning and checkout-and-install cycles while keeping the total amount of work identical to C1, isolating the consolidation effect from any change in what is actually executed.
 
-**C4 — Combined.** The merged structure from C3, with caching from C2 applied throughout. Path-based trigger filtering was originally part of C4's design but is not exercised in any workflow file used in this study, for the reason given in Section 3.3; C4's measured energy therefore reflects caching and consolidation combined only.
+**C4: Combined.** The merged structure from C3, with caching from C2 applied throughout. Path-based trigger filtering was originally part of C4's design but is not exercised in any workflow file used in this study, for the reason given in Section 3.3; C4's measured energy therefore reflects caching and consolidation combined only.
 
 Table 4.1 summarises the cross-ecosystem adaptation of the caching mechanism, extending Section 3.2.5.
 
@@ -728,7 +728,7 @@ Dependency caching (C2) produces a statistically significant, large-effect energ
 
 Workflow consolidation (C3), by contrast, **produces no statistically significant effect in any project**, including HTTPie, the only project in this study where genuine consolidation occurs. This is the most consequential single finding relative to what the literature review anticipated: Section 2.6 identified consolidation as the one strategy no prior paper had isolated as a standalone, measured intervention, and this dissertation's contribution is to report, for the first time, that the effect appears to be null, or at least too small to detect at n = 30 against this study's runner-to-runner noise. A plausible mechanistic account is that GitHub Actions' runner-provisioning overhead, the checkout-and-boot cost that consolidation is designed to eliminate duplicate copies of, is simply too small relative to total pipeline energy to produce a measurable difference: Table 5.2's checkout row for HTTPie falls from 23.55 J (C1, three separate workflow files) to 20.77 J (C4, one consolidated file), so removing two of three such checkout-and-boot overheads saves under 3 J against a base of nearly 2,000 J. Consolidation may still be worth doing for reasons this study does not measure, faster wall-clock CI feedback, simpler workflow maintenance, but the carbon case for it, on this evidence, is considerably weaker than the case for caching.
 
-Combining all three strategies (C4) produces a statistically significant, large effect in four of five projects (HTTPie −4.96%, got −2.98%, Retrofit −33.70%, Gson −21.63%), tracking closely with each project's C2 result rather than adding a separate consolidation contribution — consistent with C3 having no independent effect to add. resty's C4 result (+0.47%, not significant) is the exception, discussed in Section 6.3.
+Combining all three strategies (C4) produces a statistically significant, large effect in four of five projects (HTTPie −4.96%, got −2.98%, Retrofit −33.70%, Gson −21.63%), tracking closely with each project's C2 result rather than adding a separate consolidation contribution, consistent with C3 having no independent effect to add. resty's C4 result (+0.47%, not significant) is the exception, discussed in Section 6.3.
 
 ## 6.3 RQ2: Cross-Project Consistency
 
@@ -810,7 +810,7 @@ Several extensions follow directly from this work: investigating why workflow co
 
 **Ehlers, J. et al.** (2026) 'PPTAM𝜂: Energy Aware CI/CD Pipeline for Container Based Applications', *arXiv preprint* arXiv:2602.12081. Also IEEE Document 11500255.
 
-**European Commission** (2022) *Directive 2022/2464 — Corporate Sustainability Reporting Directive (CSRD)*, Official Journal of the European Union, L 322, pp. 15–80.
+**European Commission** (2022) *Directive 2022/2464: Corporate Sustainability Reporting Directive (CSRD)*, Official Journal of the European Union, L 322, pp. 15–80.
 
 **got** (Sorhus, S.) (2024) *got: Human-Friendly and Powerful HTTP Request Library for Node.js*. Open-source software. Available at: https://github.com/sindresorhus/got.
 
@@ -828,7 +828,7 @@ Several extensions follow directly from this work: investigating why workflow co
 
 **IEEE** (2026) 'On the Energy Consumption of Continuous Integration in Open-Source Java Projects', *IEEE Conference Publication*, Document 11500151. DOI: [to be confirmed upon access]. Available at: https://ieeexplore.ieee.org/document/11500151/ [Accessed 12 July 2026]. **Unverified**: this record has no named author list and an unresolved DOI; it could not be independently re-confirmed against IEEE Xplore before submission and should be re-checked before final submission (Section 2.2.3).
 
-**ISO/IEC** (2024) *ISO/IEC 21031:2024 — Software Carbon Intensity (SCI) Specification*. ISO/IEC, Geneva.
+**ISO/IEC** (2024) *ISO/IEC 21031:2024: Software Carbon Intensity (SCI) Specification*. ISO/IEC, Geneva.
 
 **Kruglov, A., Succi, G. and Vasuez, X.** (2021) 'Incorporating Energy Efficiency Measurement into CI/CD Pipeline', in *Proceedings of the 2nd European Symposium on Software Engineering (ESSE 2021)*, pp. 49–54. ACM. DOI: 10.1145/3501774.3501777.
 
@@ -854,7 +854,7 @@ Several extensions follow directly from this work: investigating why workflow co
 
 # Appendix A: Pre-Study Audit
 
-Before any data collection, all four experiment configurations underwent a systematic audit examining the correctness of the GitHub Actions YAML, the presence and placement of Eco-CI measurement steps, the availability of `workflow_dispatch` triggers, the consistency of artifact upload naming, and the presence of the source code required for CI commands to execute. This audit caught six critical configuration issues before any run was attempted (C1-01 through C3/C4-01 below), but it did not catch the most serious problem this project encountered, because that problem was not a configuration defect: it was that, as of the start of what this log calls Session 3, only two workflow runs had ever actually been triggered against the repository, both on the same day weeks earlier, both failing at the test step, and every other workflow file, across every configuration, had never been run even once. `raw_data.csv` held nothing but a header row. Every energy and SCI figure that had gone into the dissertation up to that point had been drawn from earlier local pilot instrumentation testing, not from a single live run of the committed workflow files — a fact that was only surfaced by auditing the GitHub Actions run history directly rather than trusting that "the workflows exist" meant "the workflows have run." That audit, and the two live-execution bugs it led to fixing (C1-05, C1-06 below), are what actually produced this dissertation's first real data.
+Before any data collection, all four experiment configurations underwent a systematic audit examining the correctness of the GitHub Actions YAML, the presence and placement of Eco-CI measurement steps, the availability of `workflow_dispatch` triggers, the consistency of artifact upload naming, and the presence of the source code required for CI commands to execute. This audit caught six critical configuration issues before any run was attempted (C1-01 through C3/C4-01 below), but it did not catch the most serious problem this project encountered, because that problem was not a configuration defect: it was that, as of the start of what this log calls Session 3, only two workflow runs had ever actually been triggered against the repository, both on the same day weeks earlier, both failing at the test step, and every other workflow file, across every configuration, had never been run even once. `raw_data.csv` held nothing but a header row. Every energy and SCI figure that had gone into the dissertation up to that point had been drawn from earlier local pilot instrumentation testing, not from a single live run of the committed workflow files. That fact was only surfaced by auditing the GitHub Actions run history directly, rather than trusting that "the workflows exist" meant "the workflows have run." That audit, and the two live-execution bugs it led to fixing (C1-05, C1-06 below), are what actually produced this dissertation's first real data.
 
 Eight critical issues were identified and corrected across both passes.
 
@@ -885,6 +885,6 @@ The measurements can be reproduced end to end from the replication package.
 
 **Validating.** Before committing to the full protocol, one run of each configuration is triggered and checked to confirm it produces a valid Eco-CI artifact containing per-stage JSON.
 
-**Collecting.** A collection script queries the GitHub Actions API, downloads every Eco-CI artifact, parses the per-stage measurements, and writes the consolidated dataset. Each row records the run, configuration, workflow, stage, energy in joules, duration, timestamp, and language version. The script infers each row's project and configuration from the workflow filename rather than from where it is invoked, and queries the whole repository in one pass; running it once therefore produces a single dataset spanning all five projects. In this replication package that single file is `experiments/project-01-httpie-cli/results/raw_data.csv` — the other four projects' `results/raw_data.csv` files are empty stubs left over from an earlier per-project layout and can be disregarded. `experiments/README.md` documents this explicitly.
+**Collecting.** A collection script queries the GitHub Actions API, downloads every Eco-CI artifact, parses the per-stage measurements, and writes the consolidated dataset. Each row records the run, configuration, workflow, stage, energy in joules, duration, timestamp, and language version. The script infers each row's project and configuration from the workflow filename rather than from where it is invoked, and queries the whole repository in one pass; running it once therefore produces a single dataset spanning all five projects. In this replication package that single file is `experiments/project-01-httpie-cli/results/raw_data.csv`; the other four projects' `results/raw_data.csv` files are empty stubs left over from an earlier per-project layout and can be disregarded. `experiments/README.md` documents this explicitly.
 
 **Analysing.** `experiments/project-01-httpie-cli/analysis/full_analysis.py` (mirrored in `energy_analysis.ipynb`) loads that single dataset, runs the Shapiro-Wilk, Wilcoxon, Bonferroni, and Cliff's delta procedures of Section 5.2, computes SCI across the five grid regions of Section 3.6, and writes the figures and summary tables that populate Chapter 5. Both scripts select each project's rows from the one file with `df['project'] == '<name>'`; neither reads from any other project's folder.
