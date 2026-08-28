@@ -19,7 +19,7 @@ resty's own CI is a single workflow file with a Go version matrix (`stable`, `1.
 
 ## Status
 
-All four configurations validated (one clean run each, all passed on first attempt) on 23 August 2026. Full n=30 protocol not yet run.
+Full n = 30 protocol complete for all four configurations. See `dissertation/DISSERTATION.md`, Chapter 5, for results.
 
 ## Reproducing
 
@@ -28,3 +28,5 @@ set -a && source ../.env && set +a
 python3 ../project-01-httpie-cli/scripts/trigger_runs.py --branch main --workflow p04-resty-c1-tests.yml --runs 30
 python3 ../project-01-httpie-cli/scripts/collect_results.py
 ```
+
+`collect_results.py` queries the whole repository in one pass and writes every project's rows to `../project-01-httpie-cli/results/raw_data.csv` (see `experiments/README.md`); this project has no separate `results/` folder of its own.

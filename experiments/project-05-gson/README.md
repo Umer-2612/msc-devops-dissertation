@@ -19,7 +19,7 @@ Gson's own CI runs a Java-version matrix (11/17/21/25) plus native-image and rep
 
 ## Status
 
-All four configurations validated (one clean run each) on 23 August 2026. C3's first attempt hit a transient Maven Central registry resolution error (unrelated to the workflow itself — the identical C1 YAML passed); the retry succeeded. Full n=30 protocol not yet run.
+All four configurations validated before the full protocol; C3's first validation attempt hit a transient Maven Central registry resolution error (unrelated to the workflow itself — the identical C1 YAML passed), and the retry succeeded. Full n = 30 protocol complete for all four configurations. See `dissertation/DISSERTATION.md`, Chapter 5, for results.
 
 ## Reproducing
 
@@ -28,3 +28,5 @@ set -a && source ../.env && set +a
 python3 ../project-01-httpie-cli/scripts/trigger_runs.py --branch main --workflow p05-gson-c1-tests.yml --runs 30
 python3 ../project-01-httpie-cli/scripts/collect_results.py
 ```
+
+`collect_results.py` queries the whole repository in one pass and writes every project's rows to `../project-01-httpie-cli/results/raw_data.csv` (see `experiments/README.md`); this project has no separate `results/` folder of its own.
