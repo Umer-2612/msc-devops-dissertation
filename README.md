@@ -15,7 +15,7 @@ This repository contains the full dissertation writeup and the complete replicat
 msc-devops-dissertation/
 ├── dissertation/
 │   ├── DISSERTATION.md               ← the dissertation (single source of truth)
-│   └── Dissertation_Karachiwala.docx ← ATU submission-template copy (kept in sync manually)
+│   └── DevOps_Disseration_Umer.pdf   ← final ATU submission-template copy (kept in sync manually)
 ├── experiments/                       ← one folder per studied project
 │   ├── project-01-httpie-cli/         ← HTTPie CLI (Python) — anchor project
 │   ├── project-02-got/                ← got (JavaScript)
